@@ -1,0 +1,1331 @@
+---
+title: "Kotlin Basics"
+author: Ernest Czol
+output:   
+  rmdformats::downcute:
+    includes:
+      in_header: header.html
+---
+# Intro
+
+Developed by **JetBrains** (creator of IntelliJ IDEA) from the 2010s. The name comes from Kotlin Island (near St. Petersburg)
+
+**general-purpose** - used in wide variety of domains. Support for various programming paradigms (object-oriented, functional, imperative, procedural)  
+**cross-platform** - targets JVM, JavaScript (frontend, React), native code (LLVM, iOS)  
+**statically typed**
+
+**2017** - adopted by Google for the Android Platform  
+**2019** - announced as preferred language for Android apps
+
+# Hello World!
+```
+fun main() {
+//sampleStart
+println("Kotlinise your Android!")
+//sampleEnd
+}
+```
+
+# Basic Types
+## Type inference 
+Deduce the type of an expression at compile time.
+```
+fun main() {
+//sampleStart
+val x = 2021
+
+print(x::class.qualifiedName)
+//sampleEnd
+}
+```
+
+## Primitives
+**In Kotlin every primitive is represented as an object** (Boolean, Int, Long, Double ...).
+
+*Boxing* - convert primitives to enclosing object wapper (Java: **int -> Integer**)  
+*Unboxing* - reverse of boxing  (Java: **Integer -> int**)  
+*Autoboxing* - compiler performs conversion
+
+```
+fun main() {
+//sampleStart
+val isVisible = true // Boolean
+
+val width = 100 // Int
+
+val timestamp = 1611747645804L // Long
+
+val latitude = 46.769552 // Double
+
+val temperature = 15.3f // Float
+
+val oneByte: Byte = 1 // Byte
+//sampleEnd
+}
+```
+
+## Conversions
+
+**No implicit widening conversions for numbers in Kotlin.**
+
+```
+fun main() {
+//sampleStart
+val a: Int = 1
+val b: Long = a
+//sampleEnd
+}
+```
+
+```
+fun main() {
+//sampleStart
+val sum = 1L + 2
+
+val div = 5 / 2
+//sampleEnd
+}
+```
+
+## Literals
+
+```
+fun main() {
+//sampleStart
+val salary = 9_000_000 // $$$
+
+val binary = 0b00001011
+
+val hex = 0xFFAABB55
+
+//sampleEnd
+}
+```
+## val vs. var
+
+**val** - read-only (equivalent to Java *final*)  
+**var** - can be reassigned (*mutable*)
+
+```
+fun main() {
+//sampleStart
+val socialIdentityNumber = 1990129123456
+socialIdentityNumber = 1880414567890
+
+var temperature = 5.4
+temperature = 12.0
+//sampleEnd
+}
+```
+
+## Arrays
+
+```
+fun main() {
+//sampleStart
+val arr = arrayOf(1, 2, 3)
+print(arr)
+//sampleEnd
+}
+```
+
+```
+fun main() {
+//sampleStart
+val arr = intArrayOf(1, 2, 3)
+println(arr.contentToString())
+
+val arr2 = doubleArrayOf(0.5, 2.08, 3.14)
+println(arr2.contentToString())
+
+//sampleEnd
+}
+```
+
+```
+fun main() {
+//sampleStart
+val arr = Array(10) { i -> 2 shl i }
+print(arr.contentToString())
+//sampleEnd
+}
+```
+
+## Strings
+
+```
+fun main() {
+//sampleStart
+val str = "Welcome to Kotlin!"
+
+// lenght of a string
+println(str.length)
+
+// characters can be accessed as an array
+println(str[0])
+
+// substring [inclusive - exclusive)
+println(str.substring(11, 17))
+
+// iterated over characters in for loop
+for (letter in str) print("$letter ")
+//sampleEnd
+}
+```
+
+**Strings are *immutable* in Kotlin.**
+
+```
+fun main() {
+//sampleStart
+val str = "Welcome to Kotlin!"
+
+str[0] = 'w'
+
+//sampleEnd
+}
+```
+
+### Strings Templates
+Embed a variable or expression inside a string without string concatenation.
+```
+import java.util.Date
+
+fun main() {
+//sampleStart
+val count = 6
+val price = 3.5
+val timestamp = 1611747645804L
+
+val str = "You purchased $count items, in a total price of ${count * price}, on ${Date(timestamp)}"
+
+print(str)
+
+//sampleEnd
+}
+```
+
+# Control Flows
+## If Expressions
+'If' can be used either as an expression or as a statement. It has the role of the ternary operator.
+```
+import kotlin.random.Random
+
+fun main() {
+//sampleStart
+val x = Random.nextInt()
+
+// statement
+if (x % 2 == 0) { 
+println("even")
+} else {
+println("odd")
+}
+
+// expression (else is mandatory)
+val result = if (x % 2 == 0) "even" else "odd"
+println(result)
+
+//sampleEnd
+}
+```
+
+> <span style="color: indianred;">**Prefer expressions to make the code more concise**</span>
+
+## When Expressions
+'When' replaces Java *switches*. Can be used either as an expression or as a statement.
+
+```
+fun main() {
+//sampleStart
+
+val colorStr = "red"
+
+// expression
+val colorCode = when (colorStr) {
+"red" -> 0xFF0000
+"green" -> 0x00FF00
+"blue" -> 0x0000FF
+// else is mandatory
+}
+
+println(colorCode.toString(16))
+
+//sampleEnd
+}
+```
+
+```
+import kotlin.random.Random
+
+fun main() {
+//sampleStart
+
+val salary = Random.nextInt()
+
+// statement
+when { // no argument
+salary < 0 -> println("You owe some money to the company!")
+salary in 0..20 -> println("To low. Get another job!")
+else -> println("Not bad!")
+}
+
+//sampleEnd
+}
+```
+
+## Loops
+```
+fun main() {
+//sampleStart
+
+for (i in 1..5) {
+    println(i)
+}
+
+println()
+
+for (i in 10 downTo 0 step 2) {
+    println(i)
+}
+
+println()
+
+val temperatures = floatArrayOf(10.5f, 4.8f, 23.1f, -5.0f)
+
+for (temperature: Float in temperatures) println(temperature)
+
+//sampleEnd
+}
+```
+
+```
+import kotlin.random.Random
+
+fun main() {
+//sampleStart
+var i = 0 // note the 'var'
+while (i < 5) {
+    println(i++)
+}
+
+println()
+
+val availableCommands = arrayOf("forward", "back", "left" , "right", "exit")
+do {
+    var command = availableCommands[Random.nextInt(0, availableCommands.size)] // note the 'var'
+    println(command)
+} while (command != "exit") // command is visible here!
+
+//sampleEnd
+}
+```
+
+# Bassic OOP
+## Classes
+```
+fun main() {
+//sampleStart
+class Customer { /*...*/ }
+//sampleEnd
+}
+```
+## Constructors
+```
+fun main() {
+//sampleStart
+class Customer constructor(firstName: String, lastName: String) { /*...*/ }
+// 'constructor' keyword optional in this case 
+//sampleEnd
+}
+```
+
+### Istantiation
+```
+fun main() {
+class Customer constructor(firstName: String, lastName: String) { /*...*/ }
+//sampleStart
+Customer("Roman", "Elizarov") // no 'new' keyword needed
+//sampleEnd
+}
+```
+
+
+### Init Blocks
+```
+fun main() {
+//sampleStart
+class Customer constructor(firstName: String, lastName: String) {
+init {
+println("Customer name is $firstName $lastName")
+}
+}
+
+Customer("Roman", "Elizarov")
+//sampleEnd
+}
+```
+
+### Secondary Constructors
+
+```
+fun main() {
+//sampleStart
+class Customer constructor(firstName: String, lastName: String) {
+init {
+println("Customer name is $firstName $lastName")
+}
+
+constructor(csv: String): this(csv.split(",")[0], csv.split(",")[1]) {
+println("Secondary constructor called with $csv")
+}
+}
+
+Customer("Andrey,Breslav")
+//sampleEnd
+}
+```
+
+## Properties
+
+```
+fun main() {
+//sampleStart
+class Product() {
+val name = "Galaxy S21"
+val manufacturer = "Samsung"
+var price = 799.0
+}
+
+val product = Product()
+
+println(product.name) // get
+product.price = 599.0 // set
+println(product.price) // get
+
+//sampleEnd
+}
+```
+
+```
+fun main() {
+//sampleStart
+class Product() {
+val name = "Galaxy S21"
+val manufacturer = "Samsung"
+val description
+  get() = "Name: $name, manufactured by: $manufacturer, current price: $price"
+var price = 799.0
+  private set
+}
+
+val product = Product()
+
+product.price = 599.0 // set is private !!!
+println(product.description) // get
+
+//sampleEnd
+}
+```
+
+```
+fun main() {
+//sampleStart
+class Product(val name: String, val manufacturer: String, var price: Double) {
+val description
+  get() = "Name: $name, manufactured by: $manufacturer, current price: $price"
+}
+
+val product = Product("Galaxy S21", "Samsung", 599.0)
+
+println(product.description) // get
+
+//sampleEnd
+}
+```
+
+## Inheritance
+In Kotlin every class inherits from 'Any', which has three methods: equals(), hashCode() and toString()  
+
+**Kotlin classes are final by default**
+
+> <span style="color: indianred;">**Prefer composition over inheritance**</span>
+
+```
+fun main() {
+//sampleStart
+open class Widget(text: String) // mark class open for extension
+
+class Button(text: String): Widget(text) // extend class
+
+class Label(text: String): Widget(text) // extend class
+
+//sampleEnd
+}
+```
+
+### Overriding Functions and Properties
+
+Both functions and properties can be overriden, but need to be marked as such.
+
+```
+fun main() {
+//sampleStart
+open class Widget(open val text: String) {
+open val color = 0xFF_FF_FF // white
+open fun draw() { println("Drawing widget: $text (color ${color.toString(16)})") }
+}
+
+class Button(override val text: String): Widget(text) {
+override val color = 0x00_00_FF // blue
+override fun draw() { println("Drawing button: $text (color ${color.toString(16)})") }
+}
+
+Widget("Header").draw()
+Button("Play").draw()
+
+//sampleEnd
+}
+```
+
+## Visibility
+**In Kotlin everything is 'public' by default (implicitly).**
+
+| Modifier      | Description                                     |
+|---------------|:-----------------------------------------------:|
+| public        | visible everywhere                              |
+| private       | visible inside this class only                  |
+| protected     | visible inside this class and in subclasses too |
+| internal      | visible inside this module                      |
+
+## Data Classes
+
+Designed to hold data. All constructor parameters need to be 'val' or 'var'.  
+The following methods are generated: equals(), hashCode(), toString(), copy()
+
+```
+public final class PointOfInterest {
+   @NotNull
+   private final String name;
+   private final double latitude;
+   private final double longitude;
+   @NotNull
+   private final String poiType;
+
+   @NotNull
+   public final String getName() {
+      return this.name;
+   }
+
+   public final double getLatitude() {
+      return this.latitude;
+   }
+
+   public final double getLongitude() {
+      return this.longitude;
+   }
+
+   @NotNull
+   public final String getPoiType() {
+      return this.poiType;
+   }
+
+   public PointOfInterest(@NotNull String name, double latitude, double longitude, @NotNull String poiType) {
+      Intrinsics.checkParameterIsNotNull(name, "name");
+      Intrinsics.checkParameterIsNotNull(poiType, "poiType");
+      super();
+      this.name = name;
+      this.latitude = latitude;
+      this.longitude = longitude;
+      this.poiType = poiType;
+   }
+
+   @NotNull
+   public final String component1() {
+      return this.name;
+   }
+
+   public final double component2() {
+      return this.latitude;
+   }
+
+   public final double component3() {
+      return this.longitude;
+   }
+
+   @NotNull
+   public final String component4() {
+      return this.poiType;
+   }
+
+   @NotNull
+   public final PointOfInterest copy(@NotNull String name, double latitude, double longitude, @NotNull String poiType) {
+      Intrinsics.checkParameterIsNotNull(name, "name");
+      Intrinsics.checkParameterIsNotNull(poiType, "poiType");
+      return new PointOfInterest(name, latitude, longitude, poiType);
+   }
+
+   // $FF: synthetic method
+   public static PointOfInterest copy$default(PointOfInterest var0, String var1, double var2, double var4, String var6, int var7, Object var8) {
+      if ((var7 & 1) != 0) {
+         var1 = var0.name;
+      }
+
+      if ((var7 & 2) != 0) {
+         var2 = var0.latitude;
+      }
+
+      if ((var7 & 4) != 0) {
+         var4 = var0.longitude;
+      }
+
+      if ((var7 & 8) != 0) {
+         var6 = var0.poiType;
+      }
+
+      return var0.copy(var1, var2, var4, var6);
+   }
+
+   @NotNull
+   public String toString() {
+      return "PointOfInterest(name=" + this.name + ", latitude=" + this.latitude + ", longitude=" + this.longitude + ", poiType=" + this.poiType + ")";
+   }
+
+   public int hashCode() {
+      String var10000 = this.name;
+      int var1 = (var10000 != null ? var10000.hashCode() : 0) * 31;
+      long var10001 = Double.doubleToLongBits(this.latitude);
+      var1 = (var1 + (int)(var10001 ^ var10001 >>> 32)) * 31;
+      var10001 = Double.doubleToLongBits(this.longitude);
+      var1 = (var1 + (int)(var10001 ^ var10001 >>> 32)) * 31;
+      String var2 = this.poiType;
+      return var1 + (var2 != null ? var2.hashCode() : 0);
+   }
+
+   public boolean equals(@Nullable Object var1) {
+      if (this != var1) {
+         if (var1 instanceof PointOfInterest) {
+            PointOfInterest var2 = (PointOfInterest)var1;
+            if (Intrinsics.areEqual(this.name, var2.name) && Double.compare(this.latitude, var2.latitude) == 0 && Double.compare(this.longitude, var2.longitude) == 0 && Intrinsics.areEqual(this.poiType, var2.poiType)) {
+               return true;
+            }
+         }
+
+         return false;
+      } else {
+         return true;
+      }
+   }
+}
+//sampleStart
+data class PointOfInterest(val name: String, val latitude: Double, val longitude: Double, val poiType: String)
+
+//sampleEnd
+```
+
+## Abstract Classes
+Abstract classes can not be instantiated.  
+Abstract member does not have an implementation in its class.
+
+```
+abstract class Shape {
+    abstract fun area(): Double
+}
+
+class Rectangle(val w: Double, val h: Double): Shape() {
+    override fun area() = w * h
+}
+
+fun main() { println(Rectangle(2.0, 3.0).area()) }
+
+```
+
+## Interfaces
+A class or object can implement one or more interfaces.  
+Interfaces can have implementation, but cannot store state.
+
+```
+interface TemperatureSensorListener {
+    fun onTemperatureChanged(temp: Float)
+    fun convertToFarenheit(temp: Float) = ((temp *9 ) / 5) + 32;
+}
+
+class TempApp(): TemperatureSensorListener {
+    override fun onTemperatureChanged(temp: Float) {
+        println("Temperature is ${convertToFarenheit(temp)} °F")
+    }
+}
+
+fun main() { TempApp().onTemperatureChanged(30.5f) }
+
+```
+
+## Objects
+### Object Expressions
+Create and ad-hoc extension of a class or implementation of an interface.  
+Object expressions are executed and initialized **immediately**.
+
+```
+interface GestureListener {
+    fun onSingleTap()
+    fun onDoubleTap()
+    fun onScroll()
+    fun onFling()
+}
+
+class View {
+    fun addGestureListener(listener: GestureListener) { }
+}
+
+fun main() {
+//sampleStart
+    View().addGestureListener(object : GestureListener {
+        override fun onSingleTap() { /* ... */ }
+        override fun onDoubleTap() { /* ... */ }
+        override fun onScroll() { /* ... */ }
+        override fun onFling() { /* ... */ }
+    })
+//sampleEnd
+}
+```
+
+### Object Declarations
+Built in feature to create singletons.  
+Object declarations are initialized **lazily** when accessed for the first time
+
+```
+object DataProvider {
+    fun queryDatabase(query: String): String = /* ... */ "result"
+}
+
+fun main() {
+    DataProvider.queryDatabase("SELECT * FROM table")
+}
+
+```
+
+## Companion Objects
+Kotlin doesn't have 'static' keyword, but allows classes to have one associated object declared.  
+A companion object is initialized when the corresponding class is loaded.
+
+```
+class Temperature(val celsius: Float) {
+    companion object {
+        fun fromFahrenheit(fahrenheit: Float) = Temperature((5 * (fahrenheit - 32.0f)) / 9.0f)
+        
+        fun fromKelvin(kelvin: Float) = Temperature(kelvin - 273.15f)
+    }
+}
+
+fun main() {
+    println(Temperature.fromFahrenheit(90f).celsius)
+}
+```
+
+### Constants
+Equivalent of 'static final' in Java
+
+```
+//sampleStart
+class Temperature(val celsius: Float) {
+    companion object {
+        const val KELVIN_TO_CEELSIUS = -273.15f
+        fun fromKelvin(kelvin: Float) = Temperature(kelvin + KELVIN_TO_CEELSIUS)
+    }
+}
+
+//sampleEnd
+fun main() {
+    println(Temperature.fromKelvin(300f).celsius)
+}
+```
+
+## Enum Classes
+```
+enum class Language(isoCode: String) {
+    ENGLISH("en"),
+    FRENCH("fr"),
+    GERMAN("de"),
+    SPANISH("es"),
+    /* ... */
+}
+
+fun main() {
+    println(Language.values())
+}
+```
+
+## Sealed Classes
+
+```
+sealed class Sensor {
+    data class Wind(val speed: Float, val direction: Float): Sensor()
+    data class Light(val luminosity: Int): Sensor()
+    data class Temperature(val temperture: Float): Sensor()
+    data class Odometer(val distance: Double): Sensor()
+}
+
+object SensorDisplay {
+    fun displaySensor(sensor: Sensor) = print(
+        when(sensor) {
+            is Sensor.Wind -> "Wind is blowing at ${sensor.speed} km/h from ${sensor.direction} °T"
+            is Sensor.Light -> "Luminosity is ${sensor.luminosity}"
+            is Sensor.Temperature -> "Temperature is ${sensor.temperture}"
+            is Sensor.Odometer -> "Covered distance: ${sensor.distance}"
+        })
+}
+
+fun main() {
+    SensorDisplay.displaySensor(Sensor.Wind(10.0f, 90.5f))
+}
+```
+
+# Null Safety
+Eliminate the risk of null references ('NullPointerException')  
+Distinguish between references that can hold null and the ones that can not.
+
+```
+fun main() {
+//sampleStart
+class Bitcoin { fun sell() { print("make some money") } }
+
+var wallet = Bitcoin()
+
+wallet = null
+//sampleEnd
+}
+```
+
+> <span style="color: indianred;">**Prefer using non-nullable types**</span>
+
+### Working With Nullables
+
+```
+fun main() {
+class Bitcoin { fun sell() { println("make some money") } }
+//sampleStart
+
+var wallet: Bitcoin? = Bitcoin()
+
+// 1. Safe calls (recommended)
+
+wallet?.sell()
+
+
+// 2. Null check consitions
+
+if (wallet != null) wallet.sell()
+
+
+// 3. !! operator (try to avoid!!!)
+
+wallet!!.sell()
+
+
+//sampleEnd
+}
+```
+
+### Elvis Operator
+
+```
+fun main() {
+class Bitcoin { fun sell() { println("make some money") } }
+//sampleStart
+
+var wallet: Bitcoin? = null
+
+wallet?.sell() ?: println("Oh no! Empty wallet!")
+
+//sampleEnd
+}
+```
+
+# Equality
+
+| Kotlin  | Java     | Description          |
+|---------|:--------:|---------------------:|
+| **=**   | **=**    | assignment           |
+| **==**  | equals() | structural equality  |
+| **===** | **==**   | referential equality |
+
+```
+fun main() {
+//sampleStart
+
+data class SmartPhone(val imei: Long) // note that it is data class
+
+val a = SmartPhone(1111_2222_3333_4444)
+val b = SmartPhone(1111_2222_3333_4444)
+val c = SmartPhone(9999_8888_7777_6666)
+val d = a
+
+println("a == b : ${a == b}")
+println("a == c : ${a == c}")
+println("a == d : ${a == d}")
+println("--------------------")
+println("a === b : ${a === b}")
+println("a === c : ${a === c}")
+println("a === d : ${a === d}")
+
+//sampleEnd
+}
+```
+
+```
+fun main() {
+//sampleStart
+// String comparison works with == (equals in Java)
+
+val a = "kotlin"
+val b = "kot" + "lin"
+
+println(a == b)
+
+//sampleEnd
+}
+```
+
+# Functions
+```
+fun main() {
+//sampleStart
+fun getGrossPrice(nettoPrice: Float, taxPercent: Float): Float {
+    return nettoPrice * (100 + taxPercent) / 100
+}
+
+println(getGrossPrice(100f, 19f))
+
+//sampleEnd
+}
+```
+
+## Default and Named Arguments
+
+```
+fun main() {
+//sampleStart
+fun encrypt(message: String, key: String = "65dd8dc686a2061", algorithm: String = "aes" ) {
+    print("$message $key $algorithm")
+}
+
+encrypt("are you there?", algorithm = "rsa")
+
+//sampleEnd
+}
+```
+
+## Lambdas
+In Kotlin functions can be stored in variables and data structures, passed as arguments and returned from other functions.  
+
+**higher-order function** takes functions as parameters, or returns a function.
+
+```
+(A, B) -> R
+(A) -> R
+() -> R
+() -> Unit
+A.(B) -> R // receiver
+
+```
+
+### Lambda Expressions
+
+```
+fun main() {
+//sampleStart
+//variable |    type     |    params     |     body
+   val square: (Int) -> Int = { number: Int -> number * number }
+
+println(square(3))
+
+//sampleEnd
+}
+```
+
+### Single Lambda Argument 'it'
+
+```
+fun main() {
+//sampleStart
+val square: (Int) -> Int = { it * it }
+
+println(square(2))
+
+//sampleEnd
+}
+```
+
+### Trailing Lambdas
+
+```
+class Request
+class Response
+
+object ServerAPIManager {
+    fun sendRequest(request: Request, listener: (returnCode: Int, response: Response) -> Unit) {
+       // call server
+       println("Making request $request")
+       val response = Response()
+       val code = 200
+       
+       // dispatch result
+       listener(code, response) 
+    }
+}
+
+fun main() {
+    val request = Request()
+    ServerAPIManager.sendRequest(request) { returnCode, response ->
+        println("Server returned $returnCode")
+        // update UI with response
+    }
+}
+
+```
+
+### Lambdas with Receiver
+
+```
+fun main() {
+//sampleStart
+fun buildString(block: StringBuilder.() -> Unit): String {
+    val sb = StringBuilder()
+    sb.block()
+    return sb.toString()
+}
+
+val str = buildString { // we are in the context of a StringBuilder
+    append("Koltinise ")
+    append("your ")
+    append("Android!")
+}
+
+println(str)
+
+//sampleEnd
+}
+
+```
+
+## Extension Functions
+Extend a class with new functionality without having to inherit from the class.  
+Extension functions can be called such as they were methods of the class thet extend.
+
+```
+fun String.swap(index1: Int, index2: Int): String {
+   if (index1 >= this.length || index2 >= this.length) return this
+   
+   val chars = toCharArray()
+   val tmp = chars[index1]
+   chars[index1] = chars[index2]
+   chars[index2] = tmp
+   
+   return String(chars)
+}
+
+fun main() {
+    println("AC/DC".swap(0,4))
+}
+
+```
+
+## Scope Functions
+Execute a block of code within the context of an object.  
+
+| Function  | Reference | Return         | Is extension function?
+|-----------|:---------:|---------------:|---------------------------------------------|
+| **let**   | it        | Lambda result  | Yes                                         |
+| **run**   | this      | Lambda result  | Yes                                         |
+| **with**  | this      | Lambda result  | No: takes the context object as an argument |
+| **apply** | this      | Context object | Yes                                         |
+| **also**  | it        | Context object | Yes                                         |
+
+### Reference context object: 'it' vs 'this'
+
+```
+fun main() {
+//sampleStart
+data class PointOfInterest(var name: String, var latitude: Double, var longitude: Double, var poiType: String)
+
+// let ('it')
+fun editName(poi: PointOfInterest, newName: String?) {
+   newName?.let{ poi.name = it } // works in combination with safe-call
+}
+
+// apply ('this' - implicit)
+fun movePoi(poi: PointOfInterest, newLatitude: Double, newLongitude: Double) {
+   poi.apply {
+      latitude = newLatitude
+      longitude = newLongitude
+   }
+}
+
+//sampleEnd
+    val poi = PointOfInterest("First Hotel", 0.0, 0.0, "accomodation")
+    println(poi)
+    editName(poi, "Hotel Duo")
+    movePoi(poi, 5.5, 5.5)
+    println(poi)
+}
+```
+
+### Return Value
+
+```
+fun main() {
+fun buildString2(block: StringBuilder.() -> Unit): String {
+    val sb = StringBuilder()
+    sb.block()
+    return sb.toString()
+}
+//sampleStart
+
+// also (return context object)
+fun buildString(block: StringBuilder.() -> Unit) = StringBuilder().also { it.block() }.toString()
+
+//sampleEnd
+val str = buildString { // we are in the context of a StringBuilder
+    append("Koltinise ")
+    append("your ")
+    append("Android!")
+}
+
+println(str)
+}
+
+```
+
+
+```
+fun main() {
+//sampleStart
+
+// run (return lambda result)
+fun buildString(block: StringBuilder.() -> Unit) = StringBuilder().run { 
+   block()
+   toString()
+}
+
+//sampleEnd
+val str = buildString { // we are in the context of a StringBuilder
+    append("Koltinise ")
+    append("your ")
+    append("Android!")
+}
+
+println(str)
+}
+
+```
+
+
+## Inline Functions
+For each lambda passed as arguments to a higher-order function an object is created under the hood. 
+
+```
+// Kotlin
+fun main() {
+//sampleStart
+fun wrapper(block: () -> Unit) {
+    println("before")
+    block()
+    println("after")
+}
+
+wrapper {
+    println("do something")
+}
+//sampleEnd
+}
+```
+
+The above code generates the following conceptual Java code:
+
+```
+// Java/bytecode
+public void wrapper(Function block) {
+    System.out.println("before");
+    block.invoke(int);
+    System.out.println("after");
+}
+
+wrapper(new Function() {
+    @Override
+    public void invoke() {
+        System.out.println("do something");
+    }
+});
+
+```
+
+Solution: use 'inline'
+
+```
+// Kotlin
+inline fun wrapper(block: () -> Unit) { // note the 'inline'
+    println("before")
+    block()
+    println("after")
+}
+
+fun main() {
+    wrapper {
+        println("do something")
+    }
+}
+
+```
+
+```
+// Java/bytecode
+
+System.out.println("before");
+System.out.println("do something");
+System.out.println("after");
+
+```
+
+
+Lambdas are represented as objects behind the scenes, which introduces runtime overhead.
+
+
+# Collections
+Main data structures: Lists, Sets, Maps.  
+All of those can be either 'immutable' (by default) or 'mutable'.
+
+## Lists
+
+Stores elements in a specified order and provides indexed access to them.
+
+```
+enum class Genre { DRAMA, COMEDY, ACTION, HORROR, THRILLER }
+
+data class Movie(val title: String, val genre: Genre, val year: Int, val lenghtInMin: Int)
+
+fun main() {
+
+    val movieLibrary = listOf(Movie("Blood Diamond", Genre.DRAMA, 2006, 143), 
+                              Movie("Rush", Genre.ACTION, 2013, 123), 
+                              Movie("The Wolf of Wall Street", Genre.COMEDY, 2013, 180))
+
+    println(movieLibrary.get(0))
+    
+    println(movieLibrary[1])
+    
+    println(movieLibrary.size)
+    
+    println(movieLibrary.sumBy { it.lenghtInMin })
+    
+    println(movieLibrary.minByOrNull { it.year }?.title)
+    
+    println(movieLibrary.filter { it.genre == Genre.DRAMA })
+    
+    println(movieLibrary.map { it.title })
+}
+```
+
+```
+enum class Genre { DRAMA, COMEDY, ACTION, HORROR, THRILLER }
+
+data class Movie(val title: String, val genre: Genre, val year: Int, val lenghtInMin: Int)
+
+fun main() {
+//sampleStart
+    val movieLibrary = listOf(Movie("Blood Diamond", Genre.DRAMA, 2006, 143), 
+                              Movie("Rush", Genre.ACTION, 2013, 123), 
+                              Movie("The Wolf of Wall Street", Genre.COMEDY, 2013, 180))
+
+   movieLibrary.add(Movie("Bohemian Rhapsody", Genre.DRAMA, 2018, 133))
+//sampleEnd
+}
+```
+
+## Sets
+Stores unique elements. Element order is generally undefined (except for LinkedHashSet)
+
+```
+enum class Genre { DRAMA, COMEDY, ACTION, HORROR, THRILLER }
+
+data class Movie(val title: String, val genre: Genre, val year: Int, val lenghtInMin: Int)
+
+fun main() {
+//sampleStart
+    val movieLibrary = mutableSetOf(Movie("Blood Diamond", Genre.DRAMA, 2006, 143), 
+                              Movie("Rush", Genre.ACTION, 2013, 123), 
+                              Movie("The Wolf of Wall Street", Genre.COMEDY, 2013, 180))
+
+   println(movieLibrary.add(Movie("Blood Diamond", Genre.DRAMA, 2006, 143)))
+   
+   println(movieLibrary.union(setOf(Movie("Bohemian Rhapsody", Genre.DRAMA, 2018, 133))))
+   
+//sampleEnd
+}
+```
+
+## Maps
+Stores key-value pairs. Keys are unique.
+
+```
+enum class Genre { DRAMA, COMEDY, ACTION, HORROR, THRILLER }
+
+data class Movie(val title: String, val genre: Genre, val year: Int, val lenghtInMin: Int)
+
+fun main() {
+
+    val movieLibrary = mutableSetOf(Movie("Blood Diamond", Genre.DRAMA, 2006, 143), 
+                              Movie("Rush", Genre.ACTION, 2013, 123),
+                              Movie("Bohemian Rhapsody", Genre.DRAMA, 2018, 133),
+                              Movie("The Wolf of Wall Street", Genre.COMEDY, 2013, 180))
+
+//sampleStart
+
+val movieMap = movieLibrary.associateBy{ it.genre }
+
+println(movieMap)
+   
+//sampleEnd
+}
+```
+
+```
+enum class Genre { DRAMA, COMEDY, ACTION, HORROR, THRILLER }
+
+data class Movie(val title: String, val genre: Genre, val year: Int, val lenghtInMin: Int)
+
+fun main() {
+
+    val movieLibrary = mutableSetOf(Movie("Blood Diamond", Genre.DRAMA, 2006, 143), 
+                              Movie("Rush", Genre.ACTION, 2013, 123),
+                              Movie("Bohemian Rhapsody", Genre.DRAMA, 2018, 133),
+                              Movie("The Wolf of Wall Street", Genre.COMEDY, 2013, 180))
+
+val movieMap = movieLibrary.associateBy{ it.genre }
+
+//sampleStart
+    val editableMovieMap = movieMap.toMutableMap()
+
+    println(editableMovieMap.get(Genre.DRAMA))
+    println(editableMovieMap[Genre.COMEDY])
+
+    editableMovieMap.put(Genre.COMEDY, Movie("The Hunt", Genre.THRILLER, 2020, 115))
+    println(editableMovieMap)
+   
+//sampleEnd
+}
+```
+
+> <span style="color: indianred;">**Prefer collection specific operations (filter, map, find ...) instead of loops (for, while) to make the code more concise**</span>
+
+# Immutability
+Once created, an object/variable cannot be changed. Immutable objects are thread safe. 
+Easier logic, no race conditions, no concurrency problems, no need to sync.  
+
+Kotlin encourages immutability by:
+
+> <span style="color: indianred;">**Prefer using 'val' instead of 'var'.**</span>
+
+> <span style="color: indianred;">**Prefer using immutable collections.**</span>
+
+
+
