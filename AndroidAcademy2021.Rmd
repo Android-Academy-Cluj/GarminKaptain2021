@@ -61,6 +61,12 @@ val temperature = 15.3f // Float
 
 val oneByte: Byte = 1 // Byte
 //sampleEnd
+println("isVisible: ${isVisible::class.simpleName}")
+println("width: ${width::class.simpleName}")
+println("timestamp: ${timestamp::class.simpleName}")
+println("latitude: ${latitude::class.simpleName}")
+println("temperature: ${temperature::class.simpleName}")
+println("oneByte: ${oneByte::class.simpleName}")
 }
 ```
 
@@ -76,7 +82,7 @@ val b: Long = a
 //sampleEnd
 }
 ```
-
+### Dividing Ints
 ```
 fun main() {
 //sampleStart
@@ -84,6 +90,7 @@ val sum = 1L + 2
 
 val div = 5 / 2
 //sampleEnd
+println("div: ${div::class.simpleName}")
 }
 ```
 
@@ -99,6 +106,9 @@ val binary = 0b00001011
 val hex = 0xFFAABB55
 
 //sampleEnd
+println("salary: ${salary::class.simpleName}")
+println("binary: ${binary::class.simpleName}")
+println("hex: ${hex::class.simpleName}")
 }
 ```
 ## val vs. var
@@ -124,7 +134,7 @@ temperature = 12.0
 fun main() {
 //sampleStart
 val arr = arrayOf(1, 2, 3)
-print(arr)
+print(arr.contentToString())
 //sampleEnd
 }
 ```
@@ -618,7 +628,11 @@ public final class PointOfInterest {
    }
 }
 //sampleStart
-data class PointOfInterest(val name: String, val latitude: Double, val longitude: Double, val poiType: String)
+
+data class PointOfInterest(val name: String, 
+                           val latitude: Double, 
+                           val longitude: Double, 
+                           val poiType: String)
 
 //sampleEnd
 ```
@@ -729,8 +743,8 @@ Equivalent of 'static final' in Java
 //sampleStart
 class Temperature(val celsius: Float) {
     companion object {
-        const val KELVIN_TO_CEELSIUS = -273.15f
-        fun fromKelvin(kelvin: Float) = Temperature(kelvin + KELVIN_TO_CEELSIUS)
+        const val KELVIN_TO_CEESIUS = -273.15f
+        fun fromKelvin(kelvin: Float) = Temperature(kelvin + KELVIN_TO_CELSIUS)
     }
 }
 
@@ -742,7 +756,7 @@ fun main() {
 
 ## Enum Classes
 ```
-enum class Language(isoCode: String) {
+enum class Language(val isoCode: String) {
     ENGLISH("en"),
     FRENCH("fr"),
     GERMAN("de"),
@@ -751,7 +765,7 @@ enum class Language(isoCode: String) {
 }
 
 fun main() {
-    println(Language.values())
+    println(Language.values().contentToString())
 }
 ```
 
