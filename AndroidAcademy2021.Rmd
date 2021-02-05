@@ -743,7 +743,7 @@ Equivalent of 'static final' in Java
 //sampleStart
 class Temperature(val celsius: Float) {
     companion object {
-        const val KELVIN_TO_CEESIUS = -273.15f
+        const val KELVIN_TO_CELSIUS = -273.15f
         fun fromKelvin(kelvin: Float) = Temperature(kelvin + KELVIN_TO_CELSIUS)
     }
 }
@@ -1341,5 +1341,61 @@ Kotlin encourages immutability by:
 
 > <span style="color: indianred;">**Prefer using immutable collections.**</span>
 
+# Delegation
+Reuse code through composition.
+
+```
+interface HighwayConstrcutionContract {
+    fun buildRoads()
+    fun buildBridges()
+    fun collectPayment()
+}
+
+class BigCompany(contractor: Subcontractor): HighwayConstrcutionContract by contractor {
+    override fun collectPayment() { println("BIG COMPANY makes BIG MONEY!") }
+}
+
+class Subcontractor(): HighwayConstrcutionContract {
+    override fun buildRoads() { println("SUBCONTRACTOR actually building the roads") }
+    override fun buildBridges() { println("SUBCONTRACTOR actually building the bridges") }
+    override fun collectPayment() { println("SUBCONTRACTOR barely get paid") }
+}
+
+fun main() {
+    BigCompany(Subcontractor()).apply {
+        buildRoads()
+        buildBridges()
+        collectPayment()
+    }
+}
+
+```
+
+## Delegated Properties
+
+### Lazy
+
+
+```
+class Student {
+    val homework: String by lazy { 
+        println("Busy doing homework!")
+        "some nice Kotlin code"
+    }
+    
+    fun showHomework() {
+        println("Presenting homework: $homework")
+    }
+}
+
+fun main() {
+    Student().apply {
+        showHomework()
+        showHomework()
+        showHomework()
+    }
+}
+
+```
 
 
