@@ -1,12 +1,13 @@
 ---
-title: "Kotlin Basics"
-author: Ernest Czol
+title: "Android Academy"
+author: Ernest Czol, Cristina Matei
 output:   
   rmdformats::downcute:
     includes:
       in_header: header.html
 ---
-# Intro
+# Kotlin Basics
+## Intro
 
 Developed by **JetBrains** (creator of IntelliJ IDEA) from the 2010s. The name comes from Kotlin Island (near St. Petersburg)
 
@@ -17,7 +18,7 @@ Developed by **JetBrains** (creator of IntelliJ IDEA) from the 2010s. The name c
 **2017** - adopted by Google for the Android Platform  
 **2019** - announced as preferred language for Android apps
 
-# Hello World!
+## Hello World!
 ```
 fun main() {
 //sampleStart
@@ -26,8 +27,8 @@ println("Kotlinise your Android!")
 }
 ```
 
-# Basic Types
-## Type inference 
+## Basic Types
+### Type inference 
 Deduce the type of an expression at compile time.
 ```
 fun main() {
@@ -39,7 +40,7 @@ print(x::class.qualifiedName)
 }
 ```
 
-## Primitives
+### Primitives
 **In Kotlin every primitive is represented as an object** (Boolean, Int, Long, Double ...).
 
 *Boxing* - convert primitives to enclosing object wapper (Java: **int -> Integer**)  
@@ -70,7 +71,7 @@ println("oneByte: ${oneByte::class.simpleName}")
 }
 ```
 
-## Conversions
+### Conversions
 
 **No implicit widening conversions for numbers in Kotlin.**
 
@@ -82,7 +83,7 @@ val b: Long = a
 //sampleEnd
 }
 ```
-### Dividing Ints
+#### Dividing Ints
 ```
 fun main() {
 //sampleStart
@@ -94,7 +95,7 @@ println("div: ${div::class.simpleName}")
 }
 ```
 
-## Literals
+### Literals
 
 ```
 fun main() {
@@ -111,7 +112,7 @@ println("binary: ${binary::class.simpleName}")
 println("hex: ${hex::class.simpleName}")
 }
 ```
-## val vs. var
+### val vs. var
 
 **val** - read-only (equivalent to Java *final*)  
 **var** - can be reassigned (*mutable*)
@@ -128,7 +129,7 @@ temperature = 12.0
 }
 ```
 
-## Arrays
+### Arrays
 
 ```
 fun main() {
@@ -161,7 +162,7 @@ print(arr.contentToString())
 }
 ```
 
-## Strings
+### Strings
 
 ```
 fun main() {
@@ -196,7 +197,7 @@ str[0] = 'w'
 }
 ```
 
-### Strings Templates
+#### Strings Templates
 Embed a variable or expression inside a string without string concatenation.
 ```
 import java.util.Date
@@ -215,8 +216,8 @@ print(str)
 }
 ```
 
-# Control Flows
-## If Expressions
+## Control Flows
+### If Expressions
 'If' can be used either as an expression or as a statement. It has the role of the ternary operator.
 ```
 import kotlin.random.Random
@@ -242,7 +243,7 @@ println(result)
 
 > <span style="color: indianred;">**Prefer expressions to make the code more concise**</span>
 
-## When Expressions
+### When Expressions
 'When' replaces Java *switches*. Can be used either as an expression or as a statement.
 
 ```
@@ -284,7 +285,7 @@ else -> println("Not bad!")
 }
 ```
 
-## Loops
+### Loops
 ```
 fun main() {
 //sampleStart
@@ -331,8 +332,8 @@ do {
 }
 ```
 
-# Bassic OOP
-## Classes
+## Bassic OOP
+### Classes
 ```
 fun main() {
 //sampleStart
@@ -340,7 +341,7 @@ class Customer { /*...*/ }
 //sampleEnd
 }
 ```
-## Constructors
+### Constructors
 ```
 fun main() {
 //sampleStart
@@ -350,7 +351,7 @@ class Customer constructor(firstName: String, lastName: String) { /*...*/ }
 }
 ```
 
-### Istantiation
+#### Istantiation
 ```
 fun main() {
 class Customer constructor(firstName: String, lastName: String) { /*...*/ }
@@ -361,7 +362,7 @@ Customer("Roman", "Elizarov") // no 'new' keyword needed
 ```
 
 
-### Init Blocks
+#### Init Blocks
 ```
 fun main() {
 //sampleStart
@@ -376,7 +377,7 @@ Customer("Roman", "Elizarov")
 }
 ```
 
-### Secondary Constructors
+#### Secondary Constructors
 
 ```
 fun main() {
@@ -396,7 +397,7 @@ Customer("Andrey,Breslav")
 }
 ```
 
-## Properties
+### Properties
 
 ```
 fun main() {
@@ -454,7 +455,7 @@ println(product.description) // get
 }
 ```
 
-## Inheritance
+### Inheritance
 In Kotlin every class inherits from 'Any', which has three methods: equals(), hashCode() and toString()  
 
 **Kotlin classes are final by default**
@@ -474,7 +475,7 @@ class Label(text: String): Widget(text) // extend class
 }
 ```
 
-### Overriding Functions and Properties
+#### Overriding Functions and Properties
 
 Both functions and properties can be overriden, but need to be marked as such.
 
@@ -498,7 +499,7 @@ Button("Play").draw()
 }
 ```
 
-## Visibility
+### Visibility
 **In Kotlin everything is 'public' by default (implicitly).**
 
 | Modifier      | Description                                     |
@@ -508,7 +509,7 @@ Button("Play").draw()
 | protected     | visible inside this class and in subclasses too |
 | internal      | visible inside this module                      |
 
-## Data Classes
+### Data Classes
 
 Designed to hold data. All constructor parameters need to be 'val' or 'var'.  
 The following methods are generated: equals(), hashCode(), toString(), copy()
@@ -637,7 +638,7 @@ data class PointOfInterest(val name: String,
 //sampleEnd
 ```
 
-## Abstract Classes
+### Abstract Classes
 Abstract classes can not be instantiated.  
 Abstract member does not have an implementation in its class.
 
@@ -654,7 +655,7 @@ fun main() { println(Rectangle(2.0, 3.0).area()) }
 
 ```
 
-## Interfaces
+### Interfaces
 A class or object can implement one or more interfaces.  
 Interfaces can have implementation, but cannot store state.
 
@@ -674,8 +675,8 @@ fun main() { TempApp().onTemperatureChanged(30.5f) }
 
 ```
 
-## Objects
-### Object Expressions
+### Objects
+#### Object Expressions
 Create and ad-hoc extension of a class or implementation of an interface.  
 Object expressions are executed and initialized **immediately**.
 
@@ -703,7 +704,7 @@ fun main() {
 }
 ```
 
-### Object Declarations
+#### Object Declarations
 Built in feature to create singletons.  
 Object declarations are initialized **lazily** when accessed for the first time
 
@@ -718,7 +719,7 @@ fun main() {
 
 ```
 
-## Companion Objects
+### Companion Objects
 Kotlin doesn't have 'static' keyword, but allows classes to have one associated object declared.  
 A companion object is initialized when the corresponding class is loaded.
 
@@ -736,7 +737,7 @@ fun main() {
 }
 ```
 
-### Constants
+#### Constants
 Equivalent of 'static final' in Java
 
 ```
@@ -754,7 +755,7 @@ fun main() {
 }
 ```
 
-## Enum Classes
+### Enum Classes
 ```
 enum class Language(val isoCode: String) {
     ENGLISH("en"),
@@ -769,7 +770,7 @@ fun main() {
 }
 ```
 
-## Sealed Classes
+### Sealed Classes
 
 ```
 sealed class Sensor {
@@ -794,7 +795,7 @@ fun main() {
 }
 ```
 
-# Null Safety
+## Null Safety
 Eliminate the risk of null references ('NullPointerException')  
 Distinguish between references that can hold null and the ones that can not.
 
@@ -812,7 +813,7 @@ wallet = null
 
 > <span style="color: indianred;">**Prefer using non-nullable types**</span>
 
-### Working With Nullables
+#### Working With Nullables
 
 ```
 fun main() {
@@ -840,7 +841,7 @@ wallet!!.sell()
 }
 ```
 
-### Elvis Operator
+#### Elvis Operator
 
 ```
 fun main() {
@@ -855,7 +856,7 @@ wallet?.sell() ?: println("Oh no! Empty wallet!")
 }
 ```
 
-# Equality
+## Equality
 
 | Kotlin  | Java     | Description          |
 |---------|:--------:|---------------------:|
@@ -900,7 +901,7 @@ println(a == b)
 }
 ```
 
-# Functions
+## Functions
 ```
 fun main() {
 //sampleStart
@@ -914,7 +915,7 @@ println(getGrossPrice(100f, 19f))
 }
 ```
 
-## Default and Named Arguments
+### Default and Named Arguments
 
 ```
 fun main() {
@@ -929,7 +930,7 @@ encrypt("are you there?", algorithm = "rsa")
 }
 ```
 
-## Lambdas
+### Lambdas
 In Kotlin functions can be stored in variables and data structures, passed as arguments and returned from other functions.  
 
 **higher-order function** takes functions as parameters, or returns a function.
@@ -943,7 +944,7 @@ A.(B) -> R // receiver
 
 ```
 
-### Lambda Expressions
+#### Lambda Expressions
 
 ```
 fun main() {
@@ -957,7 +958,7 @@ println(square(3))
 }
 ```
 
-### Single Lambda Argument 'it'
+#### Single Lambda Argument 'it'
 
 ```
 fun main() {
@@ -970,7 +971,7 @@ println(square(2))
 }
 ```
 
-### Trailing Lambdas
+#### Trailing Lambdas
 
 ```
 class Request
@@ -998,7 +999,7 @@ fun main() {
 
 ```
 
-### Lambdas with Receiver
+#### Lambdas with Receiver
 
 ```
 fun main() {
@@ -1022,7 +1023,7 @@ println(str)
 
 ```
 
-## Extension Functions
+### Extension Functions
 Extend a class with new functionality without having to inherit from the class.  
 Extension functions can be called such as they were methods of the class thet extend.
 
@@ -1044,7 +1045,7 @@ fun main() {
 
 ```
 
-## Scope Functions
+### Scope Functions
 Execute a block of code within the context of an object.  
 
 | Function  | Reference | Return         | Is extension function?
@@ -1055,7 +1056,7 @@ Execute a block of code within the context of an object.
 | **apply** | this      | Context object | Yes                                         |
 | **also**  | it        | Context object | Yes                                         |
 
-### Reference context object: 'it' vs 'this'
+#### Reference context object: 'it' vs 'this'
 
 ```
 fun main() {
@@ -1084,7 +1085,7 @@ fun movePoi(poi: PointOfInterest, newLatitude: Double, newLongitude: Double) {
 }
 ```
 
-### Return Value
+#### Return Value
 
 ```
 fun main() {
@@ -1134,7 +1135,7 @@ println(str)
 ```
 
 
-## Inline Functions
+### Inline Functions
 For each lambda passed as arguments to a higher-order function an object is created under the hood. 
 
 ```
@@ -1204,11 +1205,11 @@ System.out.println("after");
 Lambdas are represented as objects behind the scenes, which introduces runtime overhead.
 
 
-# Collections
+## Collections
 Main data structures: Lists, Sets, Maps.  
 All of those can be either 'immutable' (by default) or 'mutable'.
 
-## Lists
+### Lists
 
 Stores elements in a specified order and provides indexed access to them.
 
@@ -1255,7 +1256,7 @@ fun main() {
 }
 ```
 
-## Sets
+### Sets
 Stores unique elements. Element order is generally undefined (except for LinkedHashSet)
 
 ```
@@ -1277,7 +1278,7 @@ fun main() {
 }
 ```
 
-## Maps
+### Maps
 Stores key-value pairs. Keys are unique.
 
 ```
@@ -1331,7 +1332,7 @@ val movieMap = movieLibrary.associateBy{ it.genre }
 
 > <span style="color: indianred;">**Prefer collection specific operations (filter, map, find ...) instead of loops (for, while) to make the code more concise**</span>
 
-# Immutability
+## Immutability
 Once created, an object/variable cannot be changed. Immutable objects are thread safe. 
 Easier logic, no race conditions, no concurrency problems, no need to sync.  
 
@@ -1341,7 +1342,7 @@ Kotlin encourages immutability by:
 
 > <span style="color: indianred;">**Prefer using immutable collections.**</span>
 
-# Delegation
+## Delegation
 Reuse code through composition.
 
 ```
@@ -1371,9 +1372,9 @@ fun main() {
 
 ```
 
-## Delegated Properties
+### Delegated Properties
 
-### Lazy
+#### Lazy
 
 
 ```
@@ -1397,5 +1398,716 @@ fun main() {
 }
 
 ```
+
+# Android App Architecture
+
+## Common architectural principles
+
+* **Separation on concerns**
+  + Activities and Fragments should only contain logic that handles UI and OS interactions
+  + Keep these classes as lean as possible
+  + Minimize your dependency on them
+
+* **Drive UI from a model**
+  + Models are components that are responsible for handling the data for an app. 
+  + They're independent from the View objects and app components in your app, so they're unaffected by the app's lifecycle and the associated concerns
+
+## MVC - MVP - MVVM
+
+![MVC vs MVP vs MVVM](images/mvc-mvp-mvvm.png)
+
+## Recommended app architecture
+
+![App Architecture](images/app-architecture.png)
+
+## **ViewModel**
+
+* ViewModel is a helper class for the UI controller that is responsible for preparing data for the UI. 
+*	Contains data-handling business logic to communicate with the model
+*	ViewModel objects are automatically retained during configuration changes so that data they hold is immediately available to the next activity or fragment instance
+* ViewModel objects are scoped to the Lifecycle passed to the ViewModelProvider when getting the ViewModel
+* The ViewModel remains in memory until the Lifecycle it's scoped to goes away permanently: in the case of an activity, when it finishes, while in the case of a fragment, when it's detached
+
+    ![ViewModel Lifecycle](images/viewmodel-lifecycle.png)
+
+## **Repository**
+
+*	Repositories handle data operations 
+*	They Provide a clean API so that the rest of the app can retrieve this data easily
+*	Repositories Know where to get the data from and what API calls to make when data is updated 
+*	You can consider repositories to be mediators between different data sources
+
+## **LiveData**
+
+*	LiveData is an observable data holder class
+* LiveData only notifies **active observers** about updates
+*	LiveData considers an observer to be in an active state if its lifecycle is in the **STARTED** or **RESUMED** state
+*	An observer is removed when the state of the corresponding Lifecycle object changes to **DESTROYED**
+*	Advantages:
+    +	Ensures your UI matches your data state
+    +	No memory leaks
+    +	No crashes due to stopped activities
+    +	No more manual lifecycle handling
+    +	Always up to date data
+    +	Proper configuration changes
+    
+# Threading
+
+## Coroutines
+
+* Concurrency design patterns you can use to simplify code that executes asynchronously
+* A way of writing asynchronous code in a synchronous way
+* Light-Weight Threads
+* Rely on suspending functions
+* Non-blocking style of Programming
+
+## Suspending Functions
+
+* Functions that could be started, paused, and resumed
+
+![Suspending Functions](images/suspend-function.png)
+    
+* BLOCKING: Function A has to be completed before Function B continues. The thread is locked for Function A to complete its execution
+
+![Blocking Functions](images/blocking.png)
+    
+    
+* SUSPENDING: Function A, while has started, could be suspended, and let Function B execute, then only resume later. The thread is not locked by Function A
+
+![Suspending Functions](images/suspending.png)
+    
+* Coroutines = **Co** (cooperation) + **Routines** (functions)
+* When functions cooperate with each other, we call it as Coroutines
+
+    ![Cooperative Functions](images/cooperation-coroutines.png)
+
+Just for sake of understanding, consider functionA and functionB:
+
+```
+
+fun taskA1() {
+    println("Function A - Task 1")
+}
+
+fun taskA2() {
+    println("Function A - Task 2")
+}
+
+fun taskA3() {
+    println("Function A - Task 3")
+}
+
+fun taskA4() {
+    println("Function A - Task 4")
+}
+
+fun taskB1() {
+    println("Function B - Task 1")
+}
+
+fun taskB2() {
+    println("Function B - Task 2")
+}
+
+fun taskB3() {
+    println("Function B - Task 3")
+}
+
+fun taskB4() {
+    println("Function B - Task 4")
+}
+
+//sampleStart
+fun functionA(case: Int) {
+    when (case) {
+        1 -> {
+            taskA1()
+            functionB(1)
+        }
+        2 -> {
+            taskA2()
+            functionB(2)
+        }
+        3 -> {
+            taskA3()
+            functionB(3)
+        }
+        4 -> {
+            taskA4()
+            functionB(4)
+        }
+    }
+}
+
+fun functionB(case: Int) {
+    when (case) {
+        1 -> {
+            taskB1()
+            functionA(2)
+        }
+        2 -> {
+            taskB2()
+            functionA(3)
+        }
+        3 -> {
+            taskB3()
+            functionA(4)
+        }
+        4 -> {
+            taskB4()
+        }
+    }
+}
+
+fun main() {
+    functionA(1)
+}
+//sampleEnd
+
+```
+They are cooperating with each other. 
+When we add the **suspend** keyword in the function, all the cooperations are automatically done for us.
+
+```
+
+suspend fun doSomething(request: Request): Response {
+     // do something
+     return Response("Success")
+}
+
+```
+
+
+```
+import kotlinx.coroutines.*
+
+suspend fun taskA1() {
+    println("Function A - Task 1")
+    delay(50)
+}
+
+suspend fun taskA2() {
+    println("Function A - Task 2")
+    delay(50)
+}
+
+suspend fun taskA3() {
+    println("Function A - Task 3")
+    delay(50)
+}
+
+suspend fun taskA4() {
+    println("Function A - Task 4")
+    delay(50)
+}
+
+suspend fun taskB1() {
+    println("Function B - Task 1")
+    delay(50)
+}
+
+suspend fun taskB2() {
+    println("Function B - Task 2")
+    delay(50)
+}
+
+suspend fun taskB3() {
+    println("Function B - Task 3")
+    delay(50)
+}
+
+suspend fun taskB4() {
+    println("Function B - Task 4")
+    delay(50)
+}
+
+//sampleStart
+suspend fun functionA() {
+    taskA1()
+    taskA2()
+    taskA3()
+    taskA4()
+}
+
+suspend fun functionB() {
+    taskB1()
+    taskB2()
+    taskB3()
+    taskB4()
+}
+
+fun main() {
+    GlobalScope.launch {
+        functionA()
+    }
+    GlobalScope.launch {
+        functionB()
+    }
+    Thread.sleep(200)
+}
+//sampleEnd
+
+```
+
+> <span style="color: indianred;">**Suspend functions are only allowed to be called from a coroutine or another suspend function.**</span>
+
+
+## Coroutines vs Threads
+
+* While a coroutine is suspended, it doesn’t block the thread it was running on because coroutines are not bound to any particular thread: A coroutine can initiate its execution on one thread, then suspend and continue its execution on a different thread.
+* When you are sleeping a thread it is blocked for a particular period of time. So you can’t use that thread anymore until it finishes its work.
+
+* Each thread on a JVM consumes about 1MB of memory
+* Coroutines don’t need a lot of memory, just some bytes
+
+* Unlike threads, coroutines are not managed by the operating system, but by the Kotlin Runtime.
+* Coroutines do not replace threads, it’s more like an optimized framework written over the actual threading framework by taking advantage of the cooperative nature of functions to make it light and yet powerful
+
+```
+fun threadName(): String = Thread.currentThread().name
+
+//sampleStart
+fun test1WithThread() {
+    println("Start thread test 1: ${threadName()}")
+    Thread.sleep(500)
+    println("End thread test 1: ${threadName()}")
+}
+
+fun test2WithThread() {
+    println("Start thread test 2: ${threadName()}")
+    Thread.sleep(500)
+    println("End thread test 2: ${threadName()}")
+}
+
+fun main() {
+    test1WithThread()
+    test2WithThread()
+}
+//sampleEnd
+
+```
+
+
+```
+
+import kotlinx.coroutines.*
+
+fun threadName(): String = Thread.currentThread().name
+
+//sampleStart
+suspend fun test1WithCoroutines() {
+    println("Start coroutines test 1: ${threadName()}")
+    delay(500)
+    println("End coroutines test 1: ${threadName()}")
+}
+
+suspend fun test2WithCoroutines() {
+    println("Start coroutines test 2: ${threadName()}")
+    delay(500)
+    println("End coroutines test 2: ${threadName()}")
+}
+
+
+fun main() {
+    
+    GlobalScope.launch {
+        test1WithCoroutines()
+    }
+
+    GlobalScope.launch {
+        test2WithCoroutines()
+    }
+    
+    Thread.sleep(1000)
+}
+//sampleEnd
+
+```
+
+```
+
+import kotlinx.coroutines.*
+
+fun threadName(): String = Thread.currentThread().name
+
+//sampleStart
+fun main() {
+    repeat(10) {
+        GlobalScope.launch {
+        	println("Before delay $it: ${threadName()}")
+        	delay(100)
+        	println("After delay $it: ${threadName()}")
+        }
+    }
+    Thread.sleep(1000)
+}
+//sampleEnd
+
+```
+## Structured Concurency
+
+### Coroutine Scope
+
+* Coroutine Scope keeps track of any coroutine it creates
+* Can be defined as the restrictions  within which the Kotlin coroutines are being executed
+* Scopes help to predict the lifecycle of the coroutines
+* Types:
+  + **Global Scope**: used to launch top-level coroutines which are operating on the whole application lifetime and are not cancelled prematurely
+  
+    > <span style="color: indianred;">**Using GlobalScope is highly discouraged.**</span>
+  
+  + **LifeCycle Scope**: all the coroutines launched within the activity/fragment also dies when the activity/fragment dies
+  + **ViewModel Scope**: coroutines will live as long the view model is alive
+  
+```
+import kotlinx.coroutines.*
+//sampleStart
+// Job and Dispatcher are combined into a CoroutineContext which will be discussed shortly
+val scope = CoroutineScope(Job() + Dispatchers.Default)
+
+suspend fun doSomething() {
+    println("Start doing somethg..")
+    delay(500)
+    println("Stop doing somethg..")
+}
+
+fun cleanUp() {
+    // Cancel the scope to cancel ongoing coroutines work
+    scope.cancel()
+}
+
+fun main() {
+    // Starts a new coroutine within the scope
+    scope.launch {
+        // New coroutine that can call suspend functions
+        doSomething()
+    }
+    Thread.sleep(100)
+    cleanUp()
+    Thread.sleep(1000)
+}
+//sampleEnd
+```
+
+### Coroutine Context
+Defines the behavior of a coroutine using the following set of elements:
+
+* **Job**: can be used as a handle to coroutine where we can track the wait time and other info related to the coroutine. Controls the lifecycle of the coroutine.
+
+```
+import kotlinx.coroutines.*
+//sampleStart
+val parentJob = Job()
+val scope = CoroutineScope(parentJob + Dispatchers.Default)
+
+suspend fun doSomething(i: Int) {
+    println("Start doing somethg $i..")
+    delay(500)
+    println("Stop doing somethg $i..")
+}
+
+fun main() {
+
+    val job1 = scope.launch {
+        doSomething(1)
+    }
+    
+    val job2 = scope.launch {
+        doSomething(2)
+    }
+    
+    job1.cancel()
+    Thread.sleep(1000)
+}
+//sampleEnd
+```
+
+
+* **Dispacher**: helps coroutines in deciding the thread on which the work has to be done
+  + **Main Dispatcher**: is the UI thread of Android. Interacts with UI and perform light work. Used for: Calling suspend functions, calling UI functions, updating LiveData
+  + **Default Dispatcher**: is used to do the CPU intensive work off the main thread (sorting a list, parsing Json, etc). The default CoroutineDispatcher that is used by all coroutine builders
+  + **IO Dispatcher**: is used to do the network and disk-related work(Database, reading/writing files, networking)
+  + **Unconfined**: is not confined to any specific thread. It executes the coroutine in the current call-frame
+
+* **Coroutine Name**: The name of the coroutine, useful for debugging.
+* **Coroutine Exception Handler**: Handles uncaught exceptions
+
+
+
+```
+import kotlinx.coroutines.*
+
+//sampleStart
+val scope = CoroutineScope(Job() + Dispatchers.Default)
+
+fun main() {
+    
+    println("My parent context is ${scope.coroutineContext}")
+
+    scope.launch(CoroutineName("First")) {
+        println("My first coroutine context is $coroutineContext")
+    }
+
+    scope.launch(Dispatchers.IO + CoroutineName("Second")) {
+        println("My second coroutine context is:")
+        println("   Job: ${coroutineContext[Job]}")
+        println("   Dispatcher: ${coroutineContext[CoroutineDispatcher]}")
+        println("   Name: ${coroutineContext[CoroutineName]}")
+    }
+    
+    Thread.sleep(1000)
+}
+//sampleEnd
+```
+
+## Coroutine Builders
+
+Coroutine builders are simple functions that create a new coroutine to run a given suspending function. They can be called from normal non-suspending functions because they are not suspending themselves, and thus act as a bridge between the normal and the suspending world.
+
+### **runBlocking**
+
+* Thread-blocking function, NOT suspending
+* Coroutine builder to block the current thread
+* The simplest way to deal with a suspending function from a normal function
+
+```
+
+fun <T> runBlocking(
+    context: CoroutineContext = EmptyCoroutineContext,
+    block: suspend CoroutineScope.() -> T
+): T (source)
+
+
+```
+
+```
+import kotlinx.coroutines.*
+
+//sampleStart
+fun main() { 
+    print("Hello, ")
+    
+    // we create a coroutine running the provided suspending lambda
+    // and block the main thread while waiting for the coroutine to finish its execution
+    runBlocking {
+        // now we are inside a coroutine
+        delay(2000) // suspends the current coroutine for 2 seconds
+    }
+    
+    // will be executed after 2 seconds
+    println("World!")
+}
+//sampleEnd
+
+```
+
+### **launch**
+
+* Fire-and-forget, do not return
+* Allows to start a coroutine in background and keep working in the meantime
+
+```
+fun CoroutineScope.launch(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+): Job (source)
+```
+
+```
+import kotlinx.coroutines.*
+
+//sampleStart
+fun main() { 
+    GlobalScope.launch { // launch new coroutine in background and continue
+        delay(1000)
+        println("World!")
+    }
+    print("Hello, ") // main thread continues here immediately
+    runBlocking {     // but this expression blocks the main thread
+        delay(2000)  // ... while we delay for 2 seconds to keep JVM alive
+    } 
+}
+//sampleEnd
+```
+
+
+### **async/await**
+
+* Allows to perform an asynchronous operation returning a value
+* Returns a Deferred object
+* Call **await** (suspending function) to wait and get the result
+
+```
+fun <T> CoroutineScope.async(
+    context: CoroutineContext = EmptyCoroutineContext,
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> T
+): Deferred<T> (source)
+```
+
+```
+import kotlinx.coroutines.*
+
+//sampleStart
+fun main() {
+    val deferredResult: Deferred<String> = GlobalScope.async {
+        delay(1000L)
+        "World!"
+    }
+    
+    runBlocking {
+        println("Hello, ${deferredResult.await()}")
+    }
+}
+//sampleEnd
+```
+
+```
+import kotlinx.coroutines.*
+
+data class User(val name: String)
+
+suspend fun fetchFirstUser(): User {
+    println("Start fetching first user")
+    delay(500)
+    println("End fetching first user")
+    return User("Ben")
+}
+
+suspend fun fetchSecondUser(): User {
+    println("Start fetching second user")
+    delay(500)
+    println("End fetching second user")
+    return User("John")
+}
+
+fun showUsers(firstUser: User, secondUser: User) =
+    println("First user: ${firstUser.name}\nSecond User: ${secondUser.name}")
+
+//sampleStart
+fun main() {
+    GlobalScope.launch {
+        val userOne = async(Dispatchers.IO) { fetchFirstUser() }
+        val userTwo = async(Dispatchers.IO) { fetchSecondUser() }
+        showUsers(userOne.await(), userTwo.await())
+    }
+    runBlocking {
+        delay(1000)
+    }
+}
+//sampleEnd
+```
+
+### **withContext**
+
+* Suspending function, NOT builder
+* Calls the specified suspending block with a given coroutine context, suspends until it completes and returns the result
+* Another way of writing the async without await call
+
+```
+suspend fun <T> withContext(
+    context: CoroutineContext,
+    block: suspend CoroutineScope.() -> T
+): T (source)
+```
+
+Blocking to Suspending Function
+```
+import kotlinx.coroutines.*
+//sampleStart
+val scope = CoroutineScope(Dispatchers.Unconfined)
+
+suspend fun blockingFunction() {
+    println("Start blocking")
+    Thread.sleep(1000)
+    println("Stop blocking")
+}
+
+fun main() {
+    scope.launch {
+        blockingFunction()
+    }
+    println("After blocking")
+}
+//sampleEnd
+
+```
+
+```
+import kotlinx.coroutines.*
+
+val scope = CoroutineScope(Dispatchers.Unconfined)
+fun threadName(): String = Thread.currentThread().name
+//sampleStart
+suspend fun blockingFunction() = withContext(Dispatchers.IO) {
+    println("Start blocking")
+    Thread.sleep(1000)
+    println("Stop blocking")
+}
+
+fun main() {
+    scope.launch {
+        blockingFunction()
+    }
+    println("After blocking")
+    runBlocking {
+        delay(1500)
+    }
+}
+//sampleEnd
+
+```
+
+
+```
+import kotlinx.coroutines.*
+
+data class User(val name: String)
+
+suspend fun fetchFirstUser(): User {
+    println("Start fetching first user")
+    delay(500)
+    println("End fetching first user")
+    return User("Ben")
+}
+
+suspend fun fetchSecondUser(): User {
+    println("Start fetching second user")
+    delay(500)
+    println("End fetching second user")
+    return User("John")
+}
+
+fun showUsers(firstUser: User, secondUser: User) =
+    println("First user: ${firstUser.name}\nSecond User: ${secondUser.name}")
+
+//sampleStart
+fun main() {
+    GlobalScope.launch {
+        val userOne = withContext(Dispatchers.IO) { fetchFirstUser() }
+        val userTwo = withContext(Dispatchers.IO) { fetchSecondUser() }
+        showUsers(userOne, userTwo)
+    }
+    runBlocking {
+        delay(1500)
+    }
+}
+//sampleEnd
+```
+
+### **withContext vs async/await**
+The thumb-rules:
+
+  * Use withContext when you do not need the parallel execution
+  
+  * Use async only when you need the parallel execution
+  
+  * Both withContext and async can be used to get the result which is not possible with the launch
+  
+  * Use withContext to return the result of a single task
+  
+  * Use async for results from multiple tasks that run in parallel
+
 
 
