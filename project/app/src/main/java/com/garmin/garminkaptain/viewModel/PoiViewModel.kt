@@ -1,12 +1,12 @@
 package com.garmin.garminkaptain.viewModel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.garmin.garminkaptain.TAG
 import com.garmin.garminkaptain.data.PointOfInterest
 import com.garmin.garminkaptain.model.PoiRepository
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 class PoiViewModel : ViewModel() {
@@ -19,13 +19,16 @@ class PoiViewModel : ViewModel() {
         MutableLiveData<List<PointOfInterest>>()
     }
 
-    private val poiLiveData: MutableLiveData<PointOfInterest> by lazy {
-        MutableLiveData<PointOfInterest>()
+    private val loadingLiveData: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
     }
 
-    fun getPoi(id: Long): LiveData<PointOfInterest> {
-        loadPoi(id)
-        return poiLiveData
+    fun getPoi(id: Long): LiveData<PointOfInterest?> = liveData {
+        loadingLiveData.postValue(true)
+        PoiRepository.getPoi(id).collect {
+            emit(it)
+            loadingLiveData.postValue(false)
+        }
     }
 
     fun getPoiList(): LiveData<List<PointOfInterest>> {
@@ -33,12 +36,16 @@ class PoiViewModel : ViewModel() {
         return poiListLiveData
     }
 
-    private fun loadPoiList() {
-        poiListLiveData.postValue(PoiRepository.getPoiList())
-    }
+    fun getLoading(): LiveData<Boolean> = loadingLiveData
 
-    private fun loadPoi(id: Long) {
-        poiLiveData.postValue(PoiRepository.getPoi(id))
+    fun loadPoiList() {
+        loadingLiveData.postValue(true)
+        viewModelScope.launch {
+            PoiRepository.getPoiList().collect {
+                poiListLiveData.postValue(it)
+                loadingLiveData.postValue(false)
+            }
+        }
     }
 
     override fun onCleared() {

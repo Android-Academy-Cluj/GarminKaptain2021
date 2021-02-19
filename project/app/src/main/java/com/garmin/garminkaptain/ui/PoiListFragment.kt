@@ -6,14 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.garmin.garminkaptain.R
 import com.garmin.garminkaptain.data.PointOfInterest
-import com.garmin.garminkaptain.data.poiList
 import com.garmin.garminkaptain.viewModel.PoiViewModel
 
 class PoiListFragment : Fragment(R.layout.poi_list_fragment) {
@@ -60,6 +59,11 @@ class PoiListFragment : Fragment(R.layout.poi_list_fragment) {
             adapter = this@PoiListFragment.adapter
         }
 
+        val swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeToRefresh)
+        swipeRefreshLayout.setOnRefreshListener { viewModel.loadPoiList() }
+
+        viewModel.getLoading()
+            .observe(viewLifecycleOwner, Observer { swipeRefreshLayout.isRefreshing = it })
         viewModel.getPoiList().observe(viewLifecycleOwner, Observer {
             it?.let {
                 pointsOfInterest = it
