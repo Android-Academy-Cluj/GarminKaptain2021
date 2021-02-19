@@ -1453,7 +1453,7 @@ fun main() {
     
 # Threading
 
-## Coroutines
+## **Coroutines**
 
 * Concurrency design patterns you can use to simplify code that executes asynchronously
 * A way of writing asynchronous code in a synchronous way
@@ -2012,54 +2012,6 @@ suspend fun <T> withContext(
 ): T (source)
 ```
 
-Blocking to Suspending Function
-```
-import kotlinx.coroutines.*
-//sampleStart
-val scope = CoroutineScope(Dispatchers.Unconfined)
-
-suspend fun blockingFunction() {
-    println("Start blocking")
-    Thread.sleep(1000)
-    println("Stop blocking")
-}
-
-fun main() {
-    scope.launch {
-        blockingFunction()
-    }
-    println("After blocking")
-}
-//sampleEnd
-
-```
-
-```
-import kotlinx.coroutines.*
-
-val scope = CoroutineScope(Dispatchers.Unconfined)
-fun threadName(): String = Thread.currentThread().name
-//sampleStart
-suspend fun blockingFunction() = withContext(Dispatchers.IO) {
-    println("Start blocking")
-    Thread.sleep(1000)
-    println("Stop blocking")
-}
-
-fun main() {
-    scope.launch {
-        blockingFunction()
-    }
-    println("After blocking")
-    runBlocking {
-        delay(1500)
-    }
-}
-//sampleEnd
-
-```
-
-
 ```
 import kotlinx.coroutines.*
 
@@ -2110,4 +2062,331 @@ The thumb-rules:
   * Use async for results from multiple tasks that run in parallel
 
 
+
+## **Flows**
+
+* Can emit multiple values sequentially, as opposed to suspend functions that return only a single value
+* Asynchronous data stream built on top of coroutines
+* An implementation of **cold** streams
+
+### Hot vs Cold Stream
+
+**Hot Stream** produces values even when there is no one consuming them.
+
+**Cold Stream** starts producing values only when someone starts collecting. Cold stream is **lazy**.
+
+### Creating a flow
+
+To create flows, use flow builders. The flow builder function creates a new flow where you can manually emit new values into the stream of data using the emit function.
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            emit("Hello, World!")
+        }
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flowOf("Hello, World!")
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        listOf("Hello, World!").asFlow()
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+```
+
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                delay(1000)
+	              emit(it)
+            }
+        }
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+### Flow lifeCycle
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                delay(1000)
+                emit(it)
+            }
+        }
+        .onStart { println("Starting flow") }
+        .onCompletion { println("Flow completed") }
+        .onEach { println("On each $it") }
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+### Flow Operators
+
+#### **Itermediate Operators**
+
+* Functions that are applied to the upstream flow or flows and return a downstream flow where further operators can be applied to
+* Can be applied one after the other, forming a chain of operations that are executed lazily when an item is emitted into the flow
+
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                delay(1000)
+                emit(it)
+            }
+        }
+        .onEach { println("On each $it") }
+        .map { it -> it * it }
+        .onEach { println("On each after map $it") }
+        .filter { it <= 9 }
+        .onEach { println("On each after filter $it") }
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+**Exception handling**
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                delay(1000)
+                emit(it)
+            }
+        }
+        .onEach { if (it == 2) throw RuntimeException("Error on $it") }
+        .onStart { println("Starting flow") }
+        .onCompletion { println("Flow completed") }
+        .catch { ex -> println("Exception message: ${ex.message}") }
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                delay(1000)
+                emit(it)
+            }
+        }
+        .onEach { if (it == 2) throw RuntimeException("Error on $it") }
+        .onStart { println("Starting flow") }
+        .onCompletion { println("Flow completed") }
+        .catch { ex -> 
+            println("Exception message: ${ex.message}") 
+            emit(10)
+        }
+        //sampleEnd
+        .collect {
+            println(it)
+        }
+    }
+}
+
+```
+
+#### **Terminal Operators**
+
+* Suspending functions that start the collection of the flow
+* When you invoke a terminal operator, you invoke all the intermediate operators along with it
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    //sampleStart
+    runBlocking {
+        flow {
+            (1..5).forEach {
+                delay(1000)
+	              emit(it)
+            }
+        }
+        .map { it -> it * it }
+        .filter { it <= 9 }
+        .collect {
+            println(it)
+        }
+    }
+    //sampleEnd
+}
+
+```
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    //sampleStart
+    runBlocking {
+        val flowList = flow {
+            (1..5).forEach {
+                delay(1000)
+	              emit(it)
+            }
+        }
+        .map { it -> it * it }
+        .filter { it <= 9 }
+        .toList()
+        
+        println(flowList)
+    }
+    //sampleEnd
+}
+```
+
+### Executing in a different CoroutineContext
+
+> <span style="color: indianred;">**Every flow implementation has to preserve the collector’s context.**</span>
+    
+> <span style="color: indianred;">**Don’t call emit in a different CoroutineContext!**</span>
+    
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                //DON'T DO THIS
+                withContext(Dispatchers.Default){
+                    delay(1000)
+	                  emit(it)
+                }
+            }
+        }
+        .collect {
+            println(it)
+        }
+        //sampleEnd
+    }
+}
+```
+
+#### **flowOn** intermediate operator
+
+* Changes the CoroutineContext of the upstream flow
+* The downstream flow is not affected and executes on the CoroutineContext used to collect from the flow
+
+```
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+fun threadName(): String = Thread.currentThread().name
+
+fun main() {
+    runBlocking {
+        //sampleStart
+        flow {
+            (1..5).forEach {
+                delay(1000)
+                println("Emition Thread Name: ${threadName()}")
+	              emit(it)
+            }
+        }
+        .map { it -> it * it }
+        .flowOn(Dispatchers.Default)
+        .filter { it <= 9 }
+        .collect {
+            println("Collection Thread Name: ${threadName()}")
+            println(it)
+        }
+        //sampleEnd
+    }
+}
+```
 
