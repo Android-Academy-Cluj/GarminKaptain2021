@@ -2390,3 +2390,442 @@ fun main() {
 }
 ```
 
+# Saving Data
+
+## Room Database
+
+The Room persistence library provides an abstraction layer over SQLite to allow fluent database access while harnessing the full power of SQLite
+
+### Benefits
+  + Compile-time verification of SQL queries
+  + Convenience annotations that minimize repetitive and error-prone boilerplate code
+  + Streamlined database migration paths
+
+### Primary Components
+  + The Database class- main access point to the applications persisted data
+  + Data Entities - tables in the application's database
+  + Data Access Objects (DAOs) - provide methods to query, update, delete, insert data
+
+
+![Room Database Components](images/room_architecture.png)
+
+### Recommended app architecture
+
+![App Architecture](images/app-architecture.png)
+
+
+### Setup
+
+App level gradle file
+
+```
+ext.room_version = "2.2.6"
+```
+
+Module level gradle file
+
+```
+plugins {
+  id 'kotlin-kapt'
+}
+
+// Room
+implementation "androidx.room:room-runtime:$room_version"
+kapt "androidx.room:room-compiler:$room_version"
+
+// optional - Kotlin Extensions and Coroutines support for Room
+implementation "androidx.room:room-ktx:$room_version"
+```
+
+### The Database Class
+
+Definition
+
+```
+@Database(entities = arrayOf(PointOfInterest::class), version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): PoiDao
+}
+
+```
+
+Usage
+
+```
+val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).build()
+```
+
+
+## Entities
+
+Entities can have either an empty constructor or a constructor whose parameters contain types and names that match those of the fields in the entity. Room can also use full or partial constructors, such as a constructor that receives only some of the fields.
+
+```
+@Entity
+data class PointOfInterest(
+    @PrimaryKey val id: Long,
+    val mapLocation: MapLocation,
+    val name: String,
+    val poiType: String,
+    val reviewSummary: ReviewSummary
+)
+```
+
+Each entity must define at least 1 field as a primary key and composite primary keys can also be defined
+
+```
+@Entity(tableName = "poi_data" primaryKeys = arrayOf("mapLocation", "name"))
+data class PointOfInterest(
+    val id: Long,
+    @Ignore val mapLocation: MapLocation,
+    @ColumnInfo(name = "poi_name")  val name: String,
+    val poiType: String,
+    @Ignore val reviewSummary: ReviewSummary
+)
+```
+
+## Data Access Objects
+
+You can interact with the stored data by defining data access objects, or DAOs. Each DAO includes methods that offer abstract access to your app's database. At compile time, Room automatically generates implementations of the DAOs that you define.
+
+* There are two types of DAO methods that define database interactions:
+    + Convenience methods that let you insert, update, and delete rows in your database without writing any SQL code.
+    + Query methods that let you write your own SQL query to interact with the database.
+    
+### **Insert**
+
+Insert the parameters in the appropriate table. Each parameter must be an Entity or a collection of data entity class instances.
+
+```
+@Dao
+interface UserDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertUsers(vararg users: User)
+
+    @Insert
+    fun insertBothUsers(user1: User, user2: User)
+
+    @Insert
+    fun insertUsersAndFriends(user: User, friends: List<User>)
+}
+```
+
+### **Update**
+
+Update an entity in the corresponding table. Room uses the primary key to match passed entity instances to rows in the database. If there is no row with the same primary key, Room makes no changes.
+
+```
+@Dao
+interface UserDao {
+    @Update
+    fun updateUsers(vararg users: User)
+}
+```
+
+### **Delete**
+
+Delete specific rows in a table. Uses primary key to match passed in entity instances to rows in the specific table. If there is no match, no change is made
+
+```
+@Dao
+interface UserDao {
+    @Delete
+    fun deleteUsers(vararg users: User)
+}
+```
+
+### **Query Methods**
+
+Write SQL statements and expose them as DAO methods, which are validated at compile time.
+
+
+#### Simple Query
+
+```
+@Query("SELECT * FROM user")
+fun loadAllUsers(): Array<User>
+```
+
+
+#### Query a subset of the table's columns
+
+```
+data class NameTuple(
+    @ColumnInfo(name = "first_name") val firstName: String?,
+    @ColumnInfo(name = "last_name") val lastName: String?
+)
+
+@Query("SELECT first_name, last_name FROM user")
+fun loadFullName(): List<NameTuple>
+```
+
+
+#### Passing parameters to a query
+
+Single parameter
+
+```
+@Query("SELECT * FROM user WHERE age > :minAge")
+fun loadAllUsersOlderThan(minAge: Int): Array<User>
+```
+
+A collection of parameters
+
+```
+@Query("SELECT * FROM user WHERE region IN (:regions)")
+fun loadUsersFromRegions(regions: List<String>): List<User>
+```
+
+
+#### Query multiple tables
+
+Join multiple tables 
+
+```
+@Query(
+    "SELECT * FROM book " +
+    "INNER JOIN loan ON loan.book_id = book.id " +
+    "INNER JOIN user ON user.id = loan.user_id " +
+    "WHERE user.name LIKE :userName"
+)
+fun findBooksBorrowedByNameSync(userName: String): Li
+```
+
+Define simple objects to return a subset of columns from multiple joined tables
+
+```
+interface UserBookDao {
+    @Query(
+        "SELECT user.name AS userName, book.name AS bookName " +
+        "FROM user, book " +
+        "WHERE user.id = book.user_id"
+    )
+    fun loadUserAndBookNames(): LiveData<List<UserBook>>
+
+    data class UserBook(val userName: String?, val bookName: String?)
+}
+```
+
+## Relationships between objects
+
+Room explicitly forbids entity objects to reference each other
+
+### Embeded objects
+
+Decompose an object into its subfields into a table
+
+```
+data class Address(
+    val street: String?,
+    val state: String?,
+    val city: String?,
+    @ColumnInfo(name = "post_code") val postCode: Int
+)
+
+@Entity
+data class User(
+    @PrimaryKey val id: Int,
+    val firstName: String?,
+    @Embedded val address: Address?
+)
+```
+
+### One to one relationship
+
+Each instance of the parent entity corresponds to exactly one instance of the child entity
+
+#### Define the entities
+
+```
+@Entity
+data class User(
+    @PrimaryKey val userId: Long,
+    val name: String,
+    val age: Int
+)
+
+@Entity
+data class Library(
+    @PrimaryKey val libraryId: Long,
+    val userOwnerId: Long
+)
+```
+
+####  Model the relationship
+
+```
+data class UserAndLibrary(
+    @Embedded val user: User,
+    @Relation(
+         parentColumn = "userId",
+         entityColumn = "userOwnerId"
+    )
+    val library: Library
+)
+```
+
+####  Add a transaction method to the DAO
+
+```
+@Transaction
+@Query("SELECT * FROM User")
+fun getUsersAndLibraries(): List<UserAndLibrary>
+
+```
+
+### One to many relationship
+
+Each instance of the parent entity corresponds to zero or more instances of the child entity, but each instance of the child entity can only correspond to exactly one instance of the parent entity
+
+```
+@Entity
+data class User(
+    @PrimaryKey val userId: Long,
+    val name: String,
+    val age: Int
+)
+
+@Entity
+data class Playlist(
+    @PrimaryKey val playlistId: Long,
+    val userCreatorId: Long,
+    val playlistName: String
+)
+```
+
+####  Model the relationship
+
+```
+data class UserWithPlaylists(
+    @Embedded val user: User,
+    @Relation(
+          parentColumn = "userId",
+          entityColumn = "userCreatorId"
+    )
+    val playlists: List<Playlist>
+)
+```
+
+####  Add the transaction method to the DAO
+
+```
+@Transaction
+@Query("SELECT * FROM User")
+fun getUsersWithPlaylists(): List<UserWithPlaylists>
+```
+
+### Many to many relationship
+
+Each instance of the parent entity corresponds to zero or more instances of the child entity, and vice-versa
+
+Many-to-many relationships are distinct from other relationship types because there is generally no reference to the parent entity in the child entity.
+We need to use an associative entity which has columns for the primary key from each entity in the many-to-many relationship represented in the table.
+
+```
+@Entity
+data class Playlist(
+    @PrimaryKey val playlistId: Long,
+    val playlistName: String
+)
+
+@Entity
+data class Song(
+    @PrimaryKey val songId: Long,
+    val songName: String,
+    val artist: String
+)
+
+@Entity(primaryKeys = ["playlistId", "songId"])
+data class PlaylistSongCrossRef(
+    val playlistId: Long,
+    val songId: Long
+)
+```
+
+#### Model the relationship
+
+Use the associateBy property in the \@Relation annotation to identify the cross-reference entity
+
+Query playlists and a list of the corresponding songs
+```
+data class PlaylistWithSongs(
+    @Embedded val playlist: Playlist,
+    @Relation(
+         parentColumn = "playlistId",
+         entityColumn = "songId",
+         associateBy = Junction(PlaylistSongCrossRef::class)
+    )
+    val songs: List<Song>
+)
+```
+
+Query songs and a list of the corresponding playlists for each
+```
+data class SongWithPlaylists(
+    @Embedded val song: Song,
+    @Relation(
+         parentColumn = "songId",
+         entityColumn = "playlistId",
+         associateBy = Junction(PlaylistSongCrossRef::class)
+    )
+    val playlists: List<Playlist>
+)
+```
+
+#### Add the transaction method to the DAO
+
+```
+@Transaction
+@Query("SELECT * FROM Playlist")
+fun getPlaylistsWithSongs(): List<PlaylistWithSongs>
+
+@Transaction
+@Query("SELECT * FROM Song")
+fun getSongsWithPlaylists(): List<SongWithPlaylists>
+```
+
+## Asynchronous DAO queries
+
+To prevent queries from blocking the UI, Room does not allow database access on the main thread.
+
+### Asynchronous one-shot queries
+
+One-shot queries are database operations that only run once and grab a snapshot of data at the time of execution.
+
+```
+@Dao
+interface UserDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUsers(vararg users: User)
+
+    @Update
+    suspend fun updateUsers(vararg users: User)
+
+    @Delete
+    suspend fun deleteUsers(vararg users: User)
+
+    @Query("SELECT * FROM user WHERE id = :id")
+    suspend fun loadUserById(id: Int): User
+
+    @Query("SELECT * from user WHERE region IN (:regions)")
+    suspend fun loadUsersByRegion(regions: List<String>): List<User>
+}
+```
+
+### Observable queries
+
+Observable queries are read operations that emit new values whenever there are changes to any of the tables that are referenced by the query.
+
+```
+@Dao
+interface UserDao {
+    @Query("SELECT * FROM user WHERE id = :id")
+    fun loadUserById(id: Int): Flow<User>
+
+    @Query("SELECT * from user WHERE region IN (:regions)")
+    fun loadUsersByRegion(regions: List<String>): Flow<List<User>>
+}
+```
