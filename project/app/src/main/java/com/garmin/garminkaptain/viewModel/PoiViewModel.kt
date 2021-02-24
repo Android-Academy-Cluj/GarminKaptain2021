@@ -1,5 +1,6 @@
 package com.garmin.garminkaptain.viewModel
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.garmin.garminkaptain.TAG
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
-class PoiViewModel : ViewModel() {
+class PoiViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         Log.d(TAG, "init called")
@@ -25,7 +26,7 @@ class PoiViewModel : ViewModel() {
 
     fun getPoi(id: Long): LiveData<PointOfInterest?> = liveData {
         loadingLiveData.postValue(true)
-        PoiRepository.getPoi(id).collect {
+        PoiRepository.getPoi(getApplication(), id)?.collect {
             emit(it)
             loadingLiveData.postValue(false)
         }
@@ -41,7 +42,7 @@ class PoiViewModel : ViewModel() {
     fun loadPoiList() {
         loadingLiveData.postValue(true)
         viewModelScope.launch {
-            PoiRepository.getPoiList().collect {
+            PoiRepository.getPoiList(getApplication())?.collect {
                 poiListLiveData.postValue(it)
                 loadingLiveData.postValue(false)
             }
