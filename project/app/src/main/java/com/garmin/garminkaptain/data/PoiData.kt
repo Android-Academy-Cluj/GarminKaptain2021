@@ -22,3 +22,10 @@ data class ReviewSummary(
     val averageRating: Double,
     val numberOfReviews: Int
 )
+
+data class Review(
+    val id: Long,
+    val rating: Double,
+    val title: String,
+    val text: String
+)

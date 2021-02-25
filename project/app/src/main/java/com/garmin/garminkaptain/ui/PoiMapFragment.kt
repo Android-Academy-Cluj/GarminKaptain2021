@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.garmin.garminkaptain.R
-import com.garmin.garminkaptain.data.poiList
+import com.garmin.garminkaptain.data.PointOfInterest
+import com.garmin.garminkaptain.viewModel.PoiViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -17,7 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class PoiMapFragment : Fragment(R.layout.poi_map_fragment), GoogleMap.OnInfoWindowClickListener {
 
-    private val pointsOfInterest = poiList
+    private var pointsOfInterest = listOf<PointOfInterest>()
     private lateinit var mapFragment: SupportMapFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -25,6 +28,17 @@ class PoiMapFragment : Fragment(R.layout.poi_map_fragment), GoogleMap.OnInfoWind
         view.doOnLayout {
             refreshMap()
         }
+
+        val model: PoiViewModel by activityViewModels()
+
+        model.getPoiList().observe(viewLifecycleOwner, Observer {
+            it?.let {
+                pointsOfInterest = it
+                view.doOnLayout {
+                    refreshMap()
+                }
+            }
+        })
     }
 
     override fun onInfoWindowClick(selectedMarker: Marker?) {
@@ -43,16 +57,18 @@ class PoiMapFragment : Fragment(R.layout.poi_map_fragment), GoogleMap.OnInfoWind
     private fun refreshMap() {
         mapFragment.getMapAsync { map ->
             map.setOnInfoWindowClickListener(this)
-            val latLngBoundsBuilder = LatLngBounds.builder()
-            pointsOfInterest.forEach { poi ->
-                LatLng(poi.mapLocation.latitude, poi.mapLocation.longitude).also {
-                    latLngBoundsBuilder.include(it)
-                    map.addMarker(MarkerOptions().position(it).title(poi.name))
+            if (pointsOfInterest.isNotEmpty()) {
+                val latLngBoundsBuilder = LatLngBounds.builder()
+                pointsOfInterest.forEach { poi ->
+                    LatLng(poi.mapLocation.latitude, poi.mapLocation.longitude).also {
+                        latLngBoundsBuilder.include(it)
+                        map.addMarker(MarkerOptions().position(it).title(poi.name))
+                    }
                 }
+                map.animateCamera(
+                    CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), PADDING)
+                )
             }
-            map.animateCamera(
-                CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), PADDING)
-            )
         }
     }
 

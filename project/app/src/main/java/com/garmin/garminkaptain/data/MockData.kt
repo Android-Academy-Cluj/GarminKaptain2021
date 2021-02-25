@@ -1,5 +1,8 @@
 package com.garmin.garminkaptain.data
 
+import android.util.LongSparseArray
+import kotlin.random.Random
+
 val poiList: List<PointOfInterest> = listOf(
     PointOfInterest(
         46067,
@@ -72,3 +75,30 @@ val poiList: List<PointOfInterest> = listOf(
         ReviewSummary(0.0, 0)
     )
 )
+
+val reviews = LongSparseArray<List<Review>>(poiList.size).also { map ->
+    poiList.forEach {
+        map.put(
+            it.id,
+            randomReviewList(it.reviewSummary.numberOfReviews, it.reviewSummary.averageRating)
+        )
+    }
+}
+
+private fun randomReviewList(size: Int, rating: Double) =
+    mutableListOf<Review>().also { list -> (0 until size).forEach { list += randomReview(rating) } }
+
+private fun randomReview(rating: Double): Review {
+    return Review(
+        Random.nextLong(1L, Long.MAX_VALUE),
+        rating,
+        randomString(Random.nextInt(7, 20)),
+        randomString(Random.nextInt(50, 150))
+    )
+}
+
+private fun randomString(length: Int): String {
+    return (0 until length)
+        .map { (('A'..'Z') + ('a'..'z') + ('0'..'9')).random() }
+        .joinToString("")
+}
