@@ -2829,3 +2829,32 @@ interface UserDao {
     fun loadUsersByRegion(regions: List<String>): Flow<List<User>>
 }
 ```
+
+## Database Migrations
+
+### Preserve User Data
+
+The Room persistence library supports incremental migrations with the Migration classes to address this need. Each Migration subclass defines a migration path between a startVersion and an endVersion by overriding the Migration.migrate() method. When an app update requires a database version upgrade, Room runs the migrate() method from one or more Migration subclasses to migrate the database to the latest version at runtime.
+
+```
+private val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "CREATE TABLE `Review` (`id` INTEGER NOT NULL, `poiId` INTEGER NOT NULL, `rating` REAL NOT NULL,"+ 
+            "`title` TEXT NOT NULL, `text` TEXT NOT NULL," +
+            "PRIMARY KEY(`id`))"
+        )
+    }
+}
+```
+
+### Gracefully handle missing migration paths
+
+If Room cannot find a migration path for upgrading an existing database on a device to the current version, an IllegalStateException occurs. If it is acceptable to lose existing data when a migration path is missing, call the fallbackToDestructiveMigration() builder method when you create the database
+
+```
+Room.databaseBuilder(applicationContext, MyDb::class.java, "database-name")
+        .fallbackToDestructiveMigration()
+        .build()
+```
+

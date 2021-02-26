@@ -157,6 +157,7 @@
             <li><a href="#data-access-objects">Data Access Objects</a></li>
             <li><a href="#relationships-between-objects">Relationships between objects</a></li>
             <li><a href="#asynchronous-dao-queries">Asynchronous DAO queries</a></li>
+            <li><a href="#database-migrations">Database Migrations</a></li>
             </ul></li>
             </ul>
           </div>
@@ -2832,6 +2833,29 @@ interface UserDao {
     @Query(&quot;SELECT * from user WHERE region IN (:regions)&quot;)
     fun loadUsersByRegion(regions: List&lt;String&gt;): Flow&lt;List&lt;User&gt;&gt;
 }</code>
+</div>
+</div>
+<div id="database-migrations" class="section level2">
+<h2>Database Migrations</h2>
+<div id="preserve-user-data" class="section level3">
+<h3>Preserve User Data</h3>
+<p>The Room persistence library supports incremental migrations with the Migration classes to address this need. Each Migration subclass defines a migration path between a startVersion and an endVersion by overriding the Migration.migrate() method. When an app update requires a database version upgrade, Room runs the migrate() method from one or more Migration subclasses to migrate the database to the latest version at runtime.</p>
+<code>private val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            &quot;CREATE TABLE `Review` (`id` INTEGER NOT NULL, `poiId` INTEGER NOT NULL, `rating` REAL NOT NULL,&quot;+
+            &quot;`title` TEXT NOT NULL, `text` TEXT NOT NULL,&quot; +
+            &quot;PRIMARY KEY(`id`))&quot;
+        )
+    }
+}</code>
+</div>
+<div id="gracefully-handle-missing-migration-paths" class="section level3">
+<h3>Gracefully handle missing migration paths</h3>
+<p>If Room cannot find a migration path for upgrading an existing database on a device to the current version, an IllegalStateException occurs. If it is acceptable to lose existing data when a migration path is missing, call the fallbackToDestructiveMigration() builder method when you create the database</p>
+<code>Room.databaseBuilder(applicationContext, MyDb::class.java, &quot;database-name&quot;)
+        .fallbackToDestructiveMigration()
+        .build()</code>
 </div>
 </div>
 </div>
