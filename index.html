@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="pandoc" />
 
-        <meta name="author" content="Ernest Czol, Cristina Matei" />
+        <meta name="author" content="Ernest Czol, Cristina Matei, Barabas Istvan Attila" />
 
 
     <title>Android Academy</title>
@@ -158,6 +158,7 @@
             <li><a href="#relationships-between-objects">Relationships between objects</a></li>
             <li><a href="#asynchronous-dao-queries">Asynchronous DAO queries</a></li>
             <li><a href="#database-migrations">Database Migrations</a></li>
+            <li><a href="#save-key-value-data">Save key-value data</a></li>
             </ul></li>
             </ul>
           </div>
@@ -171,7 +172,7 @@
       <h1 class="title">Android Academy</h1>
 
       <p class="authors">
-           <span class="glyphicon glyphicon-user"></span> Ernest Czol, Cristina Matei
+           <span class="glyphicon glyphicon-user"></span> Ernest Czol, Cristina Matei, Barabas Istvan Attila
       </p>
 
 
@@ -2852,10 +2853,59 @@ interface UserDao {
 </div>
 <div id="gracefully-handle-missing-migration-paths" class="section level3">
 <h3>Gracefully handle missing migration paths</h3>
-<p>If Room cannot find a migration path for upgrading an existing database on a device to the current version, an IllegalStateException occurs. If it is acceptable to lose existing data when a migration path is missing, call the fallbackToDestructiveMigration() builder method when you create the database</p>
+<p>If Room cannot find a migration path for upgrading an existing database on a device to the current version, an IllegalStateException occurs. If it is acceptable to lose existing data when a migration path is missing, call the fallbackToDestructiveMigration() builder method when you create the database.</p>
 <code>Room.databaseBuilder(applicationContext, MyDb::class.java, &quot;database-name&quot;)
         .fallbackToDestructiveMigration()
         .build()</code>
+</div>
+</div>
+<div id="save-key-value-data" class="section level2">
+<h2>Save key-value data</h2>
+<p>For a small collection of key-values use the SharedPreferences APIs. A SharedPreferences object points to a file containing key-value pairs and provides simple methods to read and write them. Each SharedPreferences file is managed by the framework and can be private or shared.</p>
+<div id="get-a-handle-to-shared-preferences" class="section level3">
+<h3>Get a handle to shared preferences</h3>
+<p>There are two ways to get access to shared preferences</p>
+<ul>
+<li><strong>getSharedPreferences()</strong> - when there are multiple shared prefferences files identified by name. Can be called from any Context in the application.</li>
+</ul>
+<code>val sharedPref = activity?.getSharedPreferences(
+      getString(R.string.preference_file_key), Context.MODE_PRIVATE)</code>
+<ul>
+<li><strong>getPreferences()</strong> - when there is only one preference needed for an Activity. This retrieves the default shared preference file that belongs to the activity.</li>
+</ul>
+<code>val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)</code>
+<blockquote>
+<p><span style="color: indianred;">To use the SharedPreferences API to save app settings, use getDefaultSharedPreferences() to get the default shared preference file for the entire app.</span></p>
+</blockquote>
+</div>
+<div id="write-to-shared-preferences" class="section level3">
+<h3>Write to shared preferences</h3>
+<p>To write to a shared preferences file, create a SharedPreferences.Editor by calling <strong>edit()</strong>.</p>
+<code>val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+with (sharedPref.edit()) {
+    putInt(getString(R.string.saved_high_score_key), newHighScore)
+    apply()
+}</code>
+<p><strong>apply()</strong> or <strong>commit()</strong> methods can be used to save the changes. apply() changes the in-memory SharedPreferences object immediately but writes the updates to disk asynchronously, while commit() writes the data to disk synchronously.</p>
+</div>
+<div id="read-from-shared-preferences" class="section level3">
+<h3>Read from shared preferences</h3>
+<code>val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+val defaultValue = resources.getInteger(R.integer.saved_high_score_default_key)
+val highScore = sharedPref.getInt(getString(R.string.saved_high_score_key), defaultValue)</code>
+</div>
+<div id="android-ktx-core-functions" class="section level3">
+<h3>Android KTX Core functions</h3>
+<p>Extensions for common libraries that are part of the Android framework</p>
+<code>dependencies {
+    implementation &quot;androidx.core:core-ktx:1.3.2&quot;
+}</code>
+<p>Provide a more concise approach to using SharedPreferences</p>
+<code>// Commit a new value asynchronously
+sharedPreferences.edit { putBoolean(&quot;key&quot;, value) }
+
+// Commit a new value synchronously
+sharedPreferences.edit(commit = true) { putBoolean(&quot;key&quot;, value) }</code>
 </div>
 </div>
 </div>

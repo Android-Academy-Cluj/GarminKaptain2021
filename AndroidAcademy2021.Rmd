@@ -1,6 +1,6 @@
 ---
 title: "Android Academy"
-author: Ernest Czol, Cristina Matei
+author: Ernest Czol, Cristina Matei, Barabas Istvan Attila
 output:   
   rmdformats::downcute:
     includes:
@@ -2850,11 +2850,72 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
 
 ### Gracefully handle missing migration paths
 
-If Room cannot find a migration path for upgrading an existing database on a device to the current version, an IllegalStateException occurs. If it is acceptable to lose existing data when a migration path is missing, call the fallbackToDestructiveMigration() builder method when you create the database
+If Room cannot find a migration path for upgrading an existing database on a device to the current version, an IllegalStateException occurs. If it is acceptable to lose existing data when a migration path is missing, call the fallbackToDestructiveMigration() builder method when you create the database.
 
 ```
 Room.databaseBuilder(applicationContext, MyDb::class.java, "database-name")
         .fallbackToDestructiveMigration()
         .build()
 ```
+
+## Save key-value data
+
+For a small collection of key-values use the SharedPreferences APIs. A SharedPreferences object points to a file containing key-value pairs and provides simple methods to read and write them. Each SharedPreferences file is managed by the framework and can be private or shared.
+
+### Get a handle to shared preferences
+
+There are two ways to get access to shared preferences
+
+  + **getSharedPreferences()** - when there are multiple shared prefferences files identified by name. Can be called from any Context in the application.
+  ```
+  val sharedPref = activity?.getSharedPreferences(
+        getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+  ```
+  
+  + **getPreferences()** - when there is only one preference needed for an Activity. This retrieves the default shared preference file that belongs to the activity.
+  ```
+  val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
+  ```
+  
+> <span style="color: indianred;">To use the SharedPreferences API to save app settings, use getDefaultSharedPreferences() to get the default shared preference file for the entire app.</span>
+
+### Write to shared preferences
+
+To write to a shared preferences file, create a SharedPreferences.Editor by calling **edit()**.
+```
+val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+with (sharedPref.edit()) {
+    putInt(getString(R.string.saved_high_score_key), newHighScore)
+    apply()
+}
+```
+
+**apply()** or **commit()** methods can be used to save the changes. apply() changes the in-memory SharedPreferences object immediately but writes the updates to disk asynchronously, while commit() writes the data to disk synchronously.
+
+### Read from shared preferences
+
+```
+val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+val defaultValue = resources.getInteger(R.integer.saved_high_score_default_key)
+val highScore = sharedPref.getInt(getString(R.string.saved_high_score_key), defaultValue)
+```
+
+### Android KTX Core functions
+
+Extensions for common libraries that are part of the Android framework
+```
+dependencies {
+    implementation "androidx.core:core-ktx:1.3.2"
+}
+```
+
+Provide a more concise approach to using SharedPreferences
+```
+// Commit a new value asynchronously
+sharedPreferences.edit { putBoolean("key", value) }
+
+// Commit a new value synchronously
+sharedPreferences.edit(commit = true) { putBoolean("key", value) }
+```
+
 
