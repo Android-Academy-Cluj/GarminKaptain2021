@@ -132,6 +132,12 @@
             <li><a href="#immutability">Immutability</a></li>
             <li><a href="#delegation">Delegation</a></li>
             </ul></li>
+            <li><a href="#android-components">Android Components</a>
+            <ul>
+            <li><a href="#app-bar">App Bar</a></li>
+            <li><a href="#options-menu">Options Menu</a></li>
+            <li><a href="#dialogs">Dialogs</a></li>
+            </ul></li>
             <li><a href="#android-app-architecture">Android App Architecture</a>
             <ul>
             <li><a href="#common-architectural-principles">Common architectural principles</a></li>
@@ -1515,6 +1521,167 @@ fun main() {
     }
 }
 </code>
+</div>
+</div>
+</div>
+</div>
+<div id="android-components" class="section level1">
+<h1>Android Components</h1>
+<div id="app-bar" class="section level2">
+<h2>App Bar</h2>
+<p>The app bar, also known as the action bar, is one of the most important design elements in your app’s activities, because it provides a visual structure and interactive elements that are familiar to users. Using the app bar makes your app consistent with other Android apps, allowing users to quickly understand how to operate your app and have a great experience</p>
+<div id="the-toolbar-widget" class="section level3">
+<h3>The Toolbar Widget</h3>
+<p>Using the Toolbar Widget as an app bar makes it easy to set up an app bar that works on the widest range of devices and gives room to customization</p>
+<p>Add dependencies to gradle</p>
+<code>implementation &#39;androidx.appcompat:appcompat:1.2.0&#39;
+implementation &#39;com.google.android.material:material:1.3.0&#39;</code>
+<p>Make sure Activity extends AppCompatActivity</p>
+<code>class MyActivity : AppCompatActivity() {
+  // ...
+}</code>
+<p>In the app manifest, set the <application> element to use one of the NoActionBar themes</p>
+<code>&lt;application
+    android:theme=&quot;@style/Theme.MaterialComponents.DayNight.NoActionBar&quot;
+    /&gt;</code>
+<p>Add a Toolbar to the Activity’s layout</p>
+<code>&lt;androidx.appcompat.widget.Toolbar
+  android:id=&quot;@+id/my_toolbar&quot;
+  android:layout_width=&quot;match_parent&quot;
+  android:layout_height=&quot;?attr/actionBarSize&quot;
+  android:elevation=&quot;4dp&quot;
+  android:theme=&quot;@style/ThemeOverlay.MaterialComponents.Dark.ActionBar&quot;
+  app:popupTheme=&quot;@style/ThemeOverlay.MaterialComponents.Dark&quot;/&gt;</code>
+<p>In the activity’s onCreate() method, call the activity’s setSupportActionBar() method</p>
+<code>override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_my)
+    //sampleStart
+    setSupportActionBar(findViewById(R.id.my_toolbar))
+    //sampleEnd
+}</code>
+</div>
+</div>
+<div id="options-menu" class="section level2">
+<h2>Options Menu</h2>
+<p>The options menu is where you should include actions and other options that are relevant to the current activity context, such as “Search,” “Compose email,” and “Settings.”</p>
+<div id="defining-a-menu-in-xml" class="section level3">
+<h3>Defining a Menu in XML</h3>
+<p>To define the menu, create an XML file inside your project’s res/menu/ directory</p>
+<code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;&gt;
+
+    &lt;item
+        android:id=&quot;@+id/action_sort&quot;
+        android:icon=&quot;@drawable/ic_map&quot;
+        android:title=&quot;@string/label_sort&quot;
+        app:showAsAction=&quot;never&quot;/&gt;
+
+&lt;/menu&gt;</code>
+</div>
+<div id="attach-an-options-menu" class="section level3">
+<h3>Attach an Options Menu</h3>
+<p>To specify the options menu for an activity, override onCreateOptionsMenu() (fragments provide their own onCreateOptionsMenu() callback)</p>
+<code>override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    val inflater: MenuInflater = menuInflater
+    inflater.inflate(R.menu.game_menu, menu)
+    return true
+}</code>
+</div>
+<div id="handle-options-menu-interractions" class="section level3">
+<h3>Handle Options Menu interractions</h3>
+<p>When the user selects an item from the options menu (including action items in the app bar), the system calls your activity’s onOptionsItemSelected() method.</p>
+<code>override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    // Handle item selection
+    return when (item.itemId) {
+        R.id.new_game -&gt; {
+            newGame()
+            true
+        }
+        R.id.help -&gt; {
+            showHelp()
+            true
+        }
+        else -&gt; super.onOptionsItemSelected(item)
+    }
+}</code>
+</div>
+</div>
+<div id="dialogs" class="section level2">
+<h2>Dialogs</h2>
+<p>A dialog is a small window that prompts the user to make a decision or enter additional information. A dialog does not fill the screen and is normally used for modal events that require users to take an action before they can proceed.</p>
+<p>The Dialog class is the base class for dialogs and it should not be used, but the following subclasses:</p>
+<ul>
+<li><p>AlertDialog A dialog that can show a title, up to three buttons, a list of selectable items, or a custom layout.</p></li>
+<li><p>DatePickerDialog or TimePickerDialog A dialog with a pre-defined UI that allows the user to select a date or time.</p></li>
+</ul>
+<p>These classes define the style and structure for your dialog, but you should use a DialogFragment as a container for your dialog. Using DialogFragment to manage the dialog ensures that it correctly handles lifecycle events such as when the user presses the Back button or rotates the screen. The DialogFragment class also allows you to reuse the dialog’s UI as an embeddable component in a larger UI, just like a traditional Fragment (such as when you want the dialog UI to appear differently on large and small screens).</p>
+<div id="creating-a-dialog-fragment" class="section level3">
+<h3>Creating a Dialog Fragment</h3>
+<div id="simple-dialog" class="section level4">
+<h4>Simple Dialog</h4>
+<p>Create a simple dialog by extending DialogFragment and creating a AlertDialog in the onCreateDialog() callback method.</p>
+<code>class FireMissilesDialogFragment : DialogFragment() {
+
+    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+        return activity?.let {
+            // Use the Builder class for convenient dialog construction
+            val builder = AlertDialog.Builder(it)
+            builder.setMessage(R.string.dialog_fire_missiles)
+                    .setPositiveButton(R.string.fire,
+                            DialogInterface.OnClickListener { dialog, id -&gt;
+                                // FIRE ZE MISSILES!
+                            })
+                    .setNegativeButton(R.string.cancel,
+                            DialogInterface.OnClickListener { dialog, id -&gt;
+                                // User cancelled the dialog
+                            })
+            // Create the AlertDialog object and return it
+            builder.create()
+        } ?: throw IllegalStateException(&quot;Activity cannot be null&quot;)
+    }
+}</code>
+</div>
+<div id="alertdialog-anatomy" class="section level4">
+<h4>AlertDialog anatomy</h4>
+<p>There are three regions of an alert dialog + Title - This is optional and should be used only when the content area is occupied by a detailed message, a list, or custom layout + Content Area - This can display a message, a list, or other custom layout. + Action buttons - There should be no more than three action buttons in a dialog.</p>
+<div class="figure">
+<img src="data:image/png;base64,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" alt />
+<p class="caption">AlertDialog Regions</p>
+</div>
+</div>
+<div id="adding-a-list" class="section level4">
+<h4>Adding a list</h4>
+<p>There are three kinds of lists available with the AlertDialog APIs:</p>
+<ul>
+<li>A traditional single-choice list</li>
+<li>A persistent single-choice list (radio buttons)</li>
+<li>A persistent multiple-choice list (checkboxes)</li>
+</ul>
+<code>class PoiSortDialogFragment : DialogFragment() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return activity?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.setTitle(R.string.title_sort_dialog)
+                .setSingleChoiceItems(R.array.poi_sort_array, 0)
+                { dialogInterface: DialogInterface, i: Int -&gt;
+                    preferences.edit {
+                    putInt(getString(R.string.key_sort_order), i)
+                }
+            }
+            builder.create()
+        } ?: throw IllegalStateException(&quot;Activity cannot be null&quot;)
+    }
+}</code>
+</div>
+<div id="showing-an-alertdialog" class="section level4">
+<h4>Showing an AlertDialog</h4>
+<p>When you want to show your dialog, create an instance of your DialogFragment and call show(), passing the FragmentManager and a tag name for the dialog fragment.</p>
+<code>fun confirmFireMissiles() {
+    val newFragment = FireMissilesDialogFragment()
+    newFragment.show(supportFragmentManager, &quot;missiles&quot;)
+}</code>
 </div>
 </div>
 </div>
