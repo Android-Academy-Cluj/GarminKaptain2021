@@ -3,6 +3,7 @@ package com.garmin.garminkaptain.data
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 @Entity(tableName = "poi_table")
 data class PointOfInterest(
@@ -23,9 +24,21 @@ data class ReviewSummary(
     val numberOfReviews: Int
 )
 
+@Entity
 data class Review(
-    val id: Long,
+    @PrimaryKey val id: Long,
+    val poiId: Long,
     val rating: Double,
     val title: String,
     val text: String
+)
+
+data class PoiWithReviews(
+    @Embedded val poi: PointOfInterest,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "poiId"
+    )
+
+    val reviews: List<Review>
 )

@@ -11,4 +11,7 @@ object PoiRepository {
 
     fun getPoi(application: KaptainApplication, id: Long): Flow<PointOfInterest> =
         application.poiDatabase.getPoiDao().getPoi(id)
+
+    suspend fun getReviews(application: KaptainApplication, id: Long) =
+        application.poiDatabase.getPoiDao().getPoiWithReviews(id).reviews
 }

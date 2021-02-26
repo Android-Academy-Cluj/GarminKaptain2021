@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.garmin.garminkaptain.R
 import com.garmin.garminkaptain.data.Review
-import com.garmin.garminkaptain.data.reviews
+import com.garmin.garminkaptain.viewModel.ReviewViewModel
 
 class PoiReviewFragment : Fragment(R.layout.fragment_poi_review) {
 
@@ -28,6 +29,8 @@ class PoiReviewFragment : Fragment(R.layout.fragment_poi_review) {
     }
 
     inner class PoiReviewsAdapter : RecyclerView.Adapter<PoiReviewViewHolder>() {
+        private var reviewList: List<Review>? = null
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PoiReviewViewHolder {
             return PoiReviewViewHolder(
                 layoutInflater.inflate(
@@ -43,23 +46,28 @@ class PoiReviewFragment : Fragment(R.layout.fragment_poi_review) {
         }
 
         override fun getItemCount(): Int = reviewList?.size ?: 0
+
+        fun updateData(reviews: List<Review>) {
+            reviewList = reviews
+            notifyDataSetChanged()
+        }
     }
 
     private val args by navArgs<PoiDetailsFragmentArgs>()
 
-    private var reviewList: List<Review>? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        reviews[args.poiId]?.let { reviewList = it }
-    }
+    private val model: ReviewViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val reviewAdapter = PoiReviewsAdapter()
         view.findViewById<RecyclerView>(R.id.poi_review_list).apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = PoiReviewsAdapter()
+            adapter = reviewAdapter
         }
-    }
+        model.reviewLiveData.observe(viewLifecycleOwner, {
+            reviewAdapter.updateData(it)
+        })
 
+        model.getReviews(args.poiId)
+    }
 }

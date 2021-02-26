@@ -80,17 +80,29 @@ val reviews = LongSparseArray<List<Review>>(poiList.size).also { map ->
     poiList.forEach {
         map.put(
             it.id,
-            randomReviewList(it.reviewSummary.numberOfReviews, it.reviewSummary.averageRating)
+            randomReviewList(
+                it.id,
+                it.reviewSummary.numberOfReviews,
+                it.reviewSummary.averageRating
+            )
         )
     }
 }
 
-private fun randomReviewList(size: Int, rating: Double) =
-    mutableListOf<Review>().also { list -> (0 until size).forEach { list += randomReview(rating) } }
+private fun randomReviewList(poiId: Long, size: Int, rating: Double) =
+    mutableListOf<Review>().also { list ->
+        (0 until size).forEach {
+            list += randomReview(
+                poiId,
+                rating
+            )
+        }
+    }
 
-private fun randomReview(rating: Double): Review {
+private fun randomReview(poiId: Long, rating: Double): Review {
     return Review(
         Random.nextLong(1L, Long.MAX_VALUE),
+        poiId,
         rating,
         randomString(Random.nextInt(7, 20)),
         randomString(Random.nextInt(50, 150))
