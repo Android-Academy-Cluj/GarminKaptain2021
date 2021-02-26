@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -13,8 +12,6 @@ import com.garmin.garminkaptain.ui.PoiSortDialogFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = "PoiSortTag"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_sort -> {
-                PoiSortDialogFragment().show(supportFragmentManager, TAG)
+                PoiSortDialogFragment().show(supportFragmentManager, null)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.Group
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.garmin.garminkaptain.R
@@ -71,10 +72,11 @@ class PoiDetailsFragment : Fragment(R.layout.poi_details_fragment2) {
         ratingBar = view.findViewById(R.id.poi_rating_view)
 
         val model: PoiViewModel by activityViewModels()
-        model.getPoi(args.poiId).observe(viewLifecycleOwner, { onPoiReceived(it) })
-        model.getLoading().observe(viewLifecycleOwner, {
-            progressBar.visibility = if (it) VISIBLE else GONE
-        })
+        model.getPoi(args.poiId).observe(viewLifecycleOwner, Observer { onPoiReceived(it) })
+
+        model.getLoading().observe(viewLifecycleOwner, Observer {
+            progressBar.visibility = if (it) VISIBLE else GONE }
+        )
 
         reviewsButton.setOnClickListener {
             findNavController().navigate(

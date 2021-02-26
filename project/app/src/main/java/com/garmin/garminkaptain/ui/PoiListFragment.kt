@@ -1,6 +1,8 @@
 package com.garmin.garminkaptain.ui
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -18,7 +20,7 @@ import com.garmin.garminkaptain.TAG
 import com.garmin.garminkaptain.data.PointOfInterest
 import com.garmin.garminkaptain.viewModel.PoiViewModel
 
-class PoiListFragment : Fragment(R.layout.poi_list_fragment) {
+class PoiListFragment : Fragment(R.layout.poi_list_fragment), OnSharedPreferenceChangeListener {
 
     inner class PoiListItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val nameView = itemView.findViewById<TextView>(R.id.poi_item_name_view)
@@ -75,9 +77,14 @@ class PoiListFragment : Fragment(R.layout.poi_list_fragment) {
         })
 
         activity?.let {
-            it.getPreferences(Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
-                Log.d(PoiListFragment::class.java.simpleName, "onSharedPreferenceChanged key: $key value: ${sharedPreferences.getInt(key, 0)}")
-            }
+            it.getPreferences(Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(this)
         }
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        Log.d(
+            TAG, "onSharedPreferenceChanged " +
+                    "key: $key value: ${sharedPreferences.getInt(key, 0)}"
+        )
     }
 }
