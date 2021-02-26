@@ -1,6 +1,8 @@
 package com.garmin.garminkaptain.ui
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.garmin.garminkaptain.R
+import com.garmin.garminkaptain.TAG
 import com.garmin.garminkaptain.data.PointOfInterest
 import com.garmin.garminkaptain.viewModel.PoiViewModel
 
@@ -70,6 +73,11 @@ class PoiListFragment : Fragment(R.layout.poi_list_fragment) {
                 adapter.notifyDataSetChanged()
             }
         })
-    }
 
+        activity?.let {
+            it.getPreferences(Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
+                Log.d(PoiListFragment::class.java.simpleName, "onSharedPreferenceChanged key: $key value: ${sharedPreferences.getInt(key, 0)}")
+            }
+        }
+    }
 }
