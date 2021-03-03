@@ -35,6 +35,8 @@ class KaptainApplication : Application() {
 
         poiDatabase =
             Room.databaseBuilder(applicationContext, PoiDatabase::class.java, "poi-database")
+                .fallbackToDestructiveMigration()
+                .addCallback(roomListener)
                 .addMigrations(MIGRATION_1_2).build()
     }
 }

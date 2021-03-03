@@ -74,10 +74,6 @@ class PoiDetailsFragment : Fragment(R.layout.poi_details_fragment2) {
         val model: PoiViewModel by activityViewModels()
         model.getPoi(args.poiId).observe(viewLifecycleOwner, Observer { onPoiReceived(it) })
 
-        model.getLoading().observe(viewLifecycleOwner, Observer {
-            progressBar.visibility = if (it) VISIBLE else GONE }
-        )
-
         reviewsButton.setOnClickListener {
             findNavController().navigate(
                 PoiDetailsFragmentDirections.actionPoiDetailsFragmentToPoiReviewFragment(
@@ -91,11 +87,21 @@ class PoiDetailsFragment : Fragment(R.layout.poi_details_fragment2) {
         detailsGroup.visibility = VISIBLE
         nameTextView.text = poi.name
         typeTextView.text = poi.poiType
-        ratingBar.rating = poi.reviewSummary.averageRating.toFloat()
-        numReviewsTextView.text =
-            getString(R.string.label_num_reviews, poi.reviewSummary.numberOfReviews)
-        reviewsButton.isEnabled = poi.reviewSummary.numberOfReviews > 0
+        ratingBar.rating = poi.reviewSummary?.averageRating?.toFloat() ?: 0.0F
+
+        val numberOfReviews = poi.reviewSummary?.numberOfReviews
+        numReviewsTextView.text = getString(R.string.label_num_reviews, numberOfReviews?:0)
+        reviewsButton.isEnabled = numberOfReviews != null && numberOfReviews > 0
     }
+
+    fun showProgress() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    fun hideProgress() {
+        progressBar.visibility = View.GONE
+    }
+
 
     override fun onStart() {
         super.onStart()

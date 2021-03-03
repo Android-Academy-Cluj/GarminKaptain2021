@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PoiDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPoi(poi: PointOfInterest)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllPoi(poiList: List<PointOfInterest>)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllReviews(reviews: List<Review>)
 
     @Delete
@@ -22,7 +22,7 @@ interface PoiDao {
     suspend fun updatePoi(poi: PointOfInterest)
 
     @Query("SELECT * from poi_table")
-    fun getAllPoi(): Flow<List<PointOfInterest>>
+    suspend fun getAllPoi(): List<PointOfInterest>
 
     @Query("SELECT * from poi_table WHERE id=:id")
     fun getPoi(id: Long): Flow<PointOfInterest>

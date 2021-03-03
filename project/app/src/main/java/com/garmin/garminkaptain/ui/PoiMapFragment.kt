@@ -2,6 +2,7 @@ package com.garmin.garminkaptain.ui
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -9,6 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.garmin.garminkaptain.R
 import com.garmin.garminkaptain.data.PointOfInterest
+import com.garmin.garminkaptain.data.Resource
+import com.garmin.garminkaptain.data.mockBoundingBox
 import com.garmin.garminkaptain.viewModel.PoiViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -31,11 +34,21 @@ class PoiMapFragment : Fragment(R.layout.poi_map_fragment), GoogleMap.OnInfoWind
 
         val model: PoiViewModel by activityViewModels()
 
-        model.getPoiList().observe(viewLifecycleOwner, Observer {
-            it?.let {
-                pointsOfInterest = it
-                view.doOnLayout {
-                    refreshMap()
+        val bbBox = mockBoundingBox
+        model.getPoiList(bbBox).observe(viewLifecycleOwner, Observer { resource ->
+            if (resource != null) {
+                when (resource) {
+                    is Resource.Error -> Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
+                    is Resource.Loading -> {
+                    }
+                    is Resource.Success -> {
+                        if (resource.data != null) {
+                            pointsOfInterest = resource.data
+                            view.doOnLayout {
+                                refreshMap()
+                            }
+                        }
+                    }
                 }
             }
         })

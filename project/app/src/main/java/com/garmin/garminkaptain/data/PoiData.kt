@@ -9,9 +9,9 @@ import androidx.room.Relation
 data class PointOfInterest(
     @PrimaryKey val id: Long,
     @Embedded val mapLocation: MapLocation,
-    val name: String,
+    val name: String?,
     val poiType: String,
-    @Embedded val reviewSummary: ReviewSummary
+    @Embedded val reviewSummary: ReviewSummary?
 )
 
 data class MapLocation(

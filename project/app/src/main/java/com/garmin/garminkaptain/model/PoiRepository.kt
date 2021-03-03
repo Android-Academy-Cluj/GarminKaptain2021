@@ -1,17 +1,44 @@
 package com.garmin.garminkaptain.model
 
-import com.garmin.garminkaptain.KaptainApplication
+import com.garmin.garminkaptain.data.PoiDatabase
 import com.garmin.garminkaptain.data.PointOfInterest
+import com.garmin.garminkaptain.data.Review
+import com.garmin.garminkaptain.network.MockWebservice
+import com.garmin.garminkaptain.network.Webservice
 import kotlinx.coroutines.flow.Flow
 
-object PoiRepository {
+class PoiRepository(
+    private val database: PoiDatabase,
+    private val webserice: Webservice = MockWebservice(),
+) {
 
-    fun getPoiList(application: KaptainApplication): Flow<List<PointOfInterest>> =
-        application.poiDatabase.getPoiDao().getAllPoi()
+    private val dataIsStale = true
 
-    fun getPoi(application: KaptainApplication, id: Long): Flow<PointOfInterest> =
-        application.poiDatabase.getPoiDao().getPoi(id)
+    suspend fun getPoiList(bbBox: MapBoundingBox): List<PointOfInterest> {
+        var result: List<PointOfInterest>? = null
+        val cacheList = database.getPoiDao().getAllPoi()
+        result = cacheList
 
-    suspend fun getReviews(application: KaptainApplication, id: Long) =
-        application.poiDatabase.getPoiDao().getPoiWithReviews(id).reviews
+        if (cacheList.isEmpty() || dataIsStale) {
+            val response = webserice.getPoiList(bbBox).execute()
+            if (response.isSuccessful) {
+                val data = response.body()?.pointsOfInterest
+                if (data != null) {
+                    result = data
+                }
+            }
+        }
+
+        return result ?: throw Exception("Empty Data")
+    }
+
+
+    fun getPoi(id: Long): Flow<PointOfInterest> {
+        return database.getPoiDao().getPoi(id)
+    }
+
+
+    suspend fun getReviews(id: Long): List<Review> {
+        return database.getPoiDao().getPoiWithReviews(id).reviews
+    }
 }

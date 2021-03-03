@@ -1,6 +1,7 @@
 package com.garmin.garminkaptain.data
 
 import android.util.LongSparseArray
+import com.garmin.garminkaptain.model.MapBoundingBox
 import kotlin.random.Random
 
 val poiList: List<PointOfInterest> = listOf(
@@ -82,12 +83,15 @@ val reviews = LongSparseArray<List<Review>>(poiList.size).also { map ->
             it.id,
             randomReviewList(
                 it.id,
-                it.reviewSummary.numberOfReviews,
-                it.reviewSummary.averageRating
+                it.reviewSummary?.numberOfReviews ?: 0,
+                it.reviewSummary?.averageRating ?: 0.0
             )
         )
     }
 }
+
+val mockBoundingBox = MapBoundingBox(north = 28.074301976209195, south = 27.837456158746768, east = -80.2721992135048, west = -80.65328747034074)
+
 
 private fun randomReviewList(poiId: Long, size: Int, rating: Double) =
     mutableListOf<Review>().also { list ->
